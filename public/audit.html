@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESG Readiness Audit | The Climate Architects</title>
+    <link rel="stylesheet" href="css/theme.css?v=4.2">
+    
+</head>
+<body>
+
+<div id="canvas-container"></div>
+
+<nav id="navbar">
+    <div class="nav-container">
+        <a href="index.html" class="logo"><img src="logo.png?v=4.2" alt="The Climate Architects Logo"></a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#about">About</a></li>
+            
+            <li>
+                <button class="nav-parent">
+                    Singapore <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="nav-dropdown">
+                    <div class="dropdown-section-label">Singapore Services</div>
+                    <a href="audit.html" class="active">ESG Readiness Audit <span class="dd-market sg">SG</span></a>
+                    <a href="frameworks.html" >ESG Frameworks <span class="dd-market sg">SG</span></a>
+                    <a href="protection.html" >Greenwashing Protection <span class="dd-market sg">SG</span></a>
+                </div>
+            </li>
+
+            <li>
+                <button class="nav-parent">Resources <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+                <div class="nav-dropdown">
+                    <div class="dropdown-section-label">Knowledge Hub</div>
+                    <a href="index.html#decarb-lab">Decarbonisation Lab</a>
+                    <a href="resources.html">Templates Library</a>
+                </div>
+            </li>
+
+            <li><a href="pricing.html" >Pricing</a></li>
+        </ul>
+        <div class="nav-cta">
+            
+            <a href="dashboard.html" class="btn btn-ghost-login">Client Login</a>
+            <a href="dashboard.html" class="btn btn-primary">Start Audit</a>
+        </div>
+        <button
+          id="nav-hamburger-btn"
+          class="nav-hamburger"
+          aria-label="Open navigation menu"
+          aria-expanded="false"
+          aria-controls="nav-mobile-drawer"
+        >
+          <span class="bar" aria-hidden="true"></span>
+          <span class="bar" aria-hidden="true"></span>
+          <span class="bar" aria-hidden="true"></span>
+        </button>
+        
+    </div>
+</nav>
+
+<div class="page-header">
+    <h1>ESG Readiness Audit</h1>
+    <p>Establish your baseline across carbon, energy, water, and waste — and get a clear, prioritised action plan in 48 hours.</p>
+</div>
+
+<section>
+    <div class="section-container">
+        <div class="reveal" style="margin-bottom:56px;">
+            <div class="section-eyebrow">How It Works</div>
+            <h2 class="section-title">From Data to Action Plan in 3 Steps</h2>
+            <p class="section-subtitle">No consultants, no lengthy engagements. Just a clear picture of where you stand.</p>
+        </div>
+        <div class="value-props stagger-children">
+            <div class="value-card reveal delay-1">
+                <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <h3>1. Submit Your Data</h3>
+                <p>Answer a short guided questionnaire on your energy, water, waste, and reporting obligations — takes about 20 minutes.</p>
+            </div>
+            <div class="value-card reveal delay-2">
+                <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+                <h3>2. We Run the Gap Analysis</h3>
+                <p>Our platform maps your profile against Singapore's binding and upcoming regulations to flag exactly where you're exposed.</p>
+            </div>
+            <div class="value-card reveal delay-3">
+                <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                <h3>3. Get Your Roadmap</h3>
+                <p>Receive a prioritised report ranking your top 3 highest-impact gaps, with concrete next steps — in 48 hours.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="background:var(--color-bg-subtle);border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border);">
+    <div class="section-container">
+        <div class="reveal">
+            <div class="section-eyebrow">What We Check</div>
+            <h2 class="section-title">Singapore Regulations Covered</h2>
+            <p class="section-subtitle">Most SMEs are affected by 3–5 of these. We tell you which — and what to do about it.</p>
+        </div>
+        <div class="reg-table-wrap reveal">
+            <table class="reg-table">
+                <thead>
+                    <tr><th>Regulation</th><th>Applies To</th><th>Deadline</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SGX Sustainability Reporting</td>
+                        <td>All SGX-listed companies</td>
+                        <td>4 months after FY end</td>
+                        <td><span class="reg-badge rb-binding">Binding</span></td>
+                    </tr>
+                    <tr>
+                        <td>Climate Reporting (Non-listed)</td>
+                        <td>Revenue ≥S$1B + Assets ≥S$500M</td>
+                        <td>From FY2027</td>
+                        <td><span class="reg-badge rb-upcoming">Upcoming</span></td>
+                    </tr>
+                    <tr>
+                        <td>Carbon Tax (CPA)</td>
+                        <td>Industrial facilities ≥25,000 tCO2e/year</td>
+                        <td>S$45/tonne from 2026</td>
+                        <td><span class="reg-badge rb-binding">Binding</span></td>
+                    </tr>
+                    <tr>
+                        <td>Mandatory Energy Management (ECA)</td>
+                        <td>Companies using ≥54 TJ/year</td>
+                        <td>Ongoing annual</td>
+                        <td><span class="reg-badge rb-binding">Binding</span></td>
+                    </tr>
+                    <tr>
+                        <td>Water Efficiency (WEMP)</td>
+                        <td>Premises using ≥60,000 m³/year</td>
+                        <td>Annual PUB submission</td>
+                        <td><span class="reg-badge rb-binding">Binding</span></td>
+                    </tr>
+                    <tr>
+                        <td>Mandatory Packaging Reporting</td>
+                        <td>≥S$10M turnover + ≥50 tonnes packaging</td>
+                        <td>Annual NEA submission</td>
+                        <td><span class="reg-badge rb-binding">Binding</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<div class="cta-section">
+    <div style="max-width:720px;margin:0 auto;" class="reveal">
+        <h2>Ready to See Where You Stand?</h2>
+        <p>Free gap analysis for Singapore SMEs. No obligation. Results in 48 hours.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <a href="dashboard.html" class="btn btn-primary" style="padding:13px 32px;font-size:15px;">Start Free Audit</a>
+            <button class="btn btn-secondary" onclick="openModal('bookCall')" style="padding:13px 32px;font-size:15px;">Book a Call</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-content">
+        <div>
+            <a href="index.html" class="footer-logo"><img src="logo.png?v=4.2" alt="The Climate Architects"></a>
+            <p class="footer-tagline">Helping Singapore SMEs transition to sustainability. Without enterprise consulting costs.</p>
+        </div>
+        <div class="footer-section">
+            <h3>Singapore</h3>
+            <ul class="footer-links">
+                <li><a href="audit.html">ESG Audit</a></li>
+                <li><a href="frameworks.html">Frameworks</a></li>
+                <li><a href="protection.html">Greenwashing Protection</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Platform</h3>
+            <ul class="footer-links">
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="dashboard.html">Client Portal</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>&copy; 2026 The Climate Architects. All rights reserved.</span>
+        <span style="display:flex;gap:24px;align-items:center;">
+            <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;">🇸🇬</span> Singapore</span>
+        </span>
+    </div>
+</footer>
+<script src="js/main.js?v=3.1"></script>
+
+
+<div
+  id="nav-mobile-drawer"
+  class="nav-mobile-drawer"
+  role="dialog"
+  aria-modal="false"
+  aria-label="Navigation menu"
+>
+
+  <span class="mob-section-title">Singapore</span>
+  <a href="audit.html" class="mob-nav-link">
+    ESG Readiness Audit
+    <span class="dd-chip sg">SG</span>
+  </a>
+  <a href="frameworks.html" class="mob-nav-link">
+    ESG Frameworks
+    <span class="dd-chip sg">SG</span>
+  </a>
+  <a href="protection.html" class="mob-nav-link">
+    Greenwashing Protection
+    <span class="dd-chip sg">SG</span>
+  </a>
+
+  <div class="mob-divider"></div>
+
+  <a href="pricing.html" class="mob-nav-link">Pricing</a>
+
+  <div class="mob-cta-group">
+    <a href="dashboard.html" class="btn btn-secondary">
+      Client Login
+    </a>
+    <button
+      class="btn btn-primary"
+      onclick="openModal('bookCall'); 
+               document.getElementById('nav-mobile-drawer')
+                 .classList.remove('is-open');
+               document.getElementById('nav-hamburger-btn')
+                 .setAttribute('aria-expanded','false');
+               document.body.classList.remove('modal-open');"
+    >
+      Book a Call
+    </button>
+  </div>
+
+</div>
+
+<div
+  id="bookCallModal"
+  class="modal-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modal-book-title"
+  aria-hidden="true"
+>
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h2 id="modal-book-title">Book a Discovery Call</h2>
+        <p>30 minutes &middot; Free &middot; No obligation</p>
+      </div>
+      <button
+        class="modal-close"
+        onclick="closeModal('bookCall')"
+        aria-label="Close dialog"
+      >&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="mc-name">Full name</label>
+        <input
+          type="text"
+          id="mc-name"
+          name="name"
+          placeholder="Your name"
+          autocomplete="name"
+          required
+        >
+      </div>
+      <div class="form-group">
+        <label for="mc-email">Work email</label>
+        <input
+          type="email"
+          id="mc-email"
+          name="email"
+          placeholder="you@company.com"
+          autocomplete="email"
+          required
+        >
+      </div>
+      <div class="form-group">
+        <label for="mc-company">Company</label>
+        <input
+          type="text"
+          id="mc-company"
+          name="company"
+          placeholder="Company name"
+          autocomplete="organization"
+        >
+      </div>
+      <div class="form-group">
+        <label for="mc-topic">What would you like to discuss?</label>
+        <select id="mc-topic" name="topic">
+          <option value="">Select a topic</option>
+          <option value="scope3">Scope 3 Carbon Compliance</option>
+          <option value="esg-audit">ESG Readiness Audit</option>
+          <option value="carbon-tax">Carbon Tax & Energy Compliance</option>
+          <option value="greenwashing">Greenwashing Protection</option>
+          <option value="general">General Enquiry</option>
+        </select>
+      </div>
+      <button
+        id="mc-submit"
+        class="modal-submit-btn"
+        onclick="submitBookCall()"
+      >
+        Request a Call
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="js/modal.js"></script>
+<script src="js/mobile-nav.js"></script>
+</body>
+</html>
