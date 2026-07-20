@@ -1,9 +1,0 @@
-{
-  "name": "the-climate-architects",
-  "version": "1.0.0",
-  "private": true,
-  "description": "The Climate Architects — ESG compliance dashboard, deployed on Vercel",
-  "dependencies": {
-    "pdf-parse": "^1.1.1"
-  }
-}
