@@ -1,0 +1,2958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        // Sets a CSS var to the TRUE visible height (accounts for mobile
+        // browser address bar showing/hiding), so nothing at the bottom of
+        // the page — like the chat input bar — ever ends up clipped off-screen.
+        (function () {
+            function setVH() {
+                var h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+                document.documentElement.style.setProperty('--vh', (h * 0.01) + 'px');
+            }
+            setVH();
+            window.addEventListener('resize', setVH);
+            window.addEventListener('orientationchange', setVH);
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', setVH);
+                window.visualViewport.addEventListener('scroll', setVH);
+            }
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard | The Climate Architects</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --db-bg:           #F6F5F0;
+            --db-surface:      #FFFFFF;
+            --db-border:       #E9E5DB;
+            --db-border-mid:   #D6D0C2;
+            --db-ink:          #14140F;
+            --db-ink-mid:      #55564C;
+            --db-ink-muted:    #8B8B7E;
+            --db-accent:       #74966F;
+            --db-accent-deep:  #4E6F49;
+            --db-accent-hover: #628060;
+            --db-accent-tint:  rgba(116,150,111,0.09);
+            --db-accent-tint-mid: rgba(116,150,111,0.16);
+            --db-accent-border:rgba(116,150,111,0.24);
+            --db-accent-gradient: linear-gradient(135deg, #7FA279 0%, #587D53 100%);
+            --db-gold:         #B08D2E;
+            --db-gold-tint:    rgba(176,141,46,0.10);
+            --db-gold-border:  rgba(176,141,46,0.28);
+            --db-amber:        #D97706;
+            --db-amber-tint:   rgba(217,119,6,0.08);
+            --db-amber-border: rgba(217,119,6,0.20);
+            --db-canvas:       linear-gradient(165deg, #FFFFFF 0%, #F8FBF6 34%, #EBF4E6 74%, #DFEEDA 100%);
+            --db-display: 'DM Serif Display', var(--db-font), serif;
+            --db-font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --db-r:    12px;
+            --db-r-lg: 18px;
+            --db-shadow-xs: 0 1px 2px rgba(20,25,15,0.045), 0 1px 1px rgba(20,25,15,0.03);
+            --db-shadow-sm: 0 4px 14px rgba(20,25,15,0.07), 0 1px 3px rgba(20,25,15,0.05);
+            --db-shadow-md: 0 10px 28px rgba(20,25,15,0.10), 0 2px 6px rgba(20,25,15,0.05);
+            --db-shadow-accent: 0 8px 22px rgba(78,111,73,0.20);
+
+            /* Legacy mapping for backend compatibility */
+            --teal: var(--db-accent);
+            --teal-light: var(--db-accent-hover);
+            --teal-dark: var(--db-accent-hover);
+            --teal-glow: var(--db-accent-tint);
+            --teal-10: var(--db-accent-tint);
+            --forest: var(--db-ink);
+            --bg: var(--db-bg);
+            --panel: var(--db-surface);
+            --radius: var(--db-r-lg);
+            --shadow: var(--db-shadow-xs);
+            --text: var(--db-ink);
+            --text-mid: var(--db-ink-mid);
+            --text-soft: var(--db-ink-muted);
+            --danger: #ef4444;
+            --warn: #f59e0b;
+            --success: #10b981;
+            --charcoal: var(--db-surface);
+            --font: var(--db-font);
+            --serif: var(--db-font);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body, p, span, div, button, input, select, label, td, th, li, a {
+            font-family: var(--db-font);
+        }
+
+        body {
+            background: var(--db-bg);
+            color: var(--db-ink);
+            font-family: var(--db-font);
+            font-size: 14px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            height: 100vh;
+            height: 100svh;
+            height: calc(var(--vh, 1vh) * 100);
+            overflow: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--db-font);
+            font-weight: 600;
+            color: var(--db-ink);
+            letter-spacing: -0.018em;
+        }
+
+        /* ── SIDEBAR ───────────────────────────────── */
+        .sidebar {
+            width: 260px;
+            background: var(--db-surface);
+            border-right: 1px solid var(--db-border);
+            box-shadow: 1px 0 0 rgba(20,25,15,0.02), 4px 0 24px rgba(20,25,15,0.03);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 100;
+            overflow: hidden;
+        }
+        .sidebar-logo {
+            padding: 20px 22px 17px;
+            border-bottom: 1px solid var(--db-border);
+        }
+        .sidebar-logo img {
+            background: transparent !important;
+            mix-blend-mode: multiply !important;
+            height: 36px;
+            width: auto;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .logo-text { display: none; }
+        .logo-sub {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--db-ink-muted);
+            margin-top: 3px;
+        }
+        .sidebar-nav {
+            flex: 1;
+            padding: 12px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow-y: auto;
+        }
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--db-ink-muted);
+            padding: 18px 20px 6px;
+        }
+        .nav-item {
+            padding: 9px 20px 9px 22px;
+            margin: 0 10px;
+            width: calc(100% - 20px);
+            font-size: 13.5px;
+            font-weight: 400;
+            color: var(--db-ink-mid);
+            background: transparent;
+            border-left: 2px solid transparent;
+            display: block;
+            text-align: left;
+            transition: all 0.18s ease;
+            cursor: pointer;
+            border-radius: 9px;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+            text-decoration: none;
+        }
+        .nav-item:hover {
+            background: var(--db-bg);
+            color: var(--db-ink);
+            transform: translateX(1px);
+        }
+        .nav-item.active {
+            background: var(--db-accent-gradient) !important;
+            color: #FFFFFF !important;
+            font-weight: 500 !important;
+            border-left-color: transparent !important;
+            box-shadow: var(--db-shadow-accent);
+        }
+        .nav-item.active .icon { opacity: 1 !important; color: #fff; }
+        .nav-item .icon { display: inline-flex; margin-right: 10px; opacity: 0.5; vertical-align: middle; }
+        .nav-item.active .icon { opacity: 1; }
+        .nav-item:hover .icon { opacity: 0.8; }
+        .nav-badge {
+            margin-left: auto;
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--db-bg);
+            border: 1px solid var(--db-border);
+            color: var(--db-ink-muted);
+            padding: 2px 7px;
+            border-radius: 4px;
+            display: inline-block;
+            float: right;
+        }
+        .nav-badge.green {
+            background: var(--db-accent-tint);
+            border-color: var(--db-accent-border);
+            color: var(--db-accent);
+        }
+        .sidebar-footer {
+            padding: 12px 0;
+            border-top: 1px solid var(--db-border);
+            background: var(--db-surface);
+            padding-top: 4px;
+        }
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 14px 20px;
+            font-size: 12.5px;
+            color: var(--db-ink-mid);
+        }
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--db-accent-gradient);
+            border: 2px solid var(--db-surface);
+            box-shadow: 0 0 0 1px var(--db-accent-border), var(--db-shadow-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .user-info { flex: 1; overflow: hidden; }
+        .user-name { font-weight: 600; color: var(--db-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-role { font-size: 11px; color: var(--db-ink-muted); }
+        .user-role.pro { color: var(--db-gold); font-weight: 600; }
+        .back-btn {
+            font-size: 13px;
+            color: var(--db-ink-muted);
+            padding: 8px 20px;
+            display: block;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: color 0.15s ease;
+            text-align: left;
+            width: 100%;
+            text-decoration: none;
+        }
+        .back-btn:hover { color: var(--db-ink); }
+
+        /* ── MAIN CONTENT ───────────────────────────── */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--db-canvas);
+        }
+        .topbar {
+            background: rgba(255,255,255,0.82);
+            backdrop-filter: blur(14px) saturate(160%);
+            -webkit-backdrop-filter: blur(14px) saturate(160%);
+            border-bottom: 1px solid var(--db-border);
+            height: 60px;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 14px; }
+
+        .topbar-left h2 {
+            font-size: 14.5px;
+            font-weight: 600;
+            color: var(--db-ink);
+            letter-spacing: -0.01em;
+        }
+        .topbar-left p { display: block; font-size: 11px; color: var(--db-ink-muted); margin-top: 1px; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+        .pill-tag {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 11px;
+            background: var(--db-accent-tint);
+            color: var(--db-accent-deep);
+            border: 1px solid var(--db-accent-border);
+            border-radius: 20px;
+            display: inline-block;
+            letter-spacing: 0.01em;
+        }
+
+        /* ── SCROLL AREA ────────────────────────────── */
+        .page-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 36px 40px;
+        }
+
+        /* ── VIEWS ──────────────────────────────────── */
+        .view { display: none; animation: fadeUp 0.3s ease both; }
+        .view.active { display: block; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── WELCOME / HERO CARD ─────────────────────── */
+        .overview-hero {
+    background: linear-gradient(135deg, #F8F7F3 0%, rgba(116,150,111,0.07) 100%);
+    border: 1px solid var(--db-border);
+    border-top: 2px solid var(--db-accent);
+    border-radius: var(--db-r-lg);
+    padding: 34px 38px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--db-shadow-sm);
+}
+        .overview-hero img { display: none !important; }
+        .hero-eyebrow { display: none; }
+        .hero-title {
+            font-family: var(--db-display);
+            font-weight: 400;
+            font-size: 27px;
+            letter-spacing: -0.01em;
+            color: var(--db-ink);
+            margin-bottom: 8px;
+        }
+        .hero-desc {
+            font-size: 14px;
+            color: var(--db-ink-mid);
+            max-width: 540px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        /* ── BUTTONS ────────────────────────────────── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--db-font);
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn-teal,
+        .btn-solid {
+            background: var(--db-accent-gradient);
+            color: #fff;
+            border: 1px solid transparent;
+            border-radius: var(--db-r);
+            padding: 10px 19px;
+            font-size: 13.5px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            box-shadow: var(--db-shadow-accent);
+            transition: box-shadow 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+        }
+        .btn-teal:hover,
+        .btn-solid:hover {
+            filter: brightness(1.06);
+            box-shadow: 0 12px 28px rgba(78,111,73,0.28);
+            transform: translateY(-1.5px);
+            color: #fff;
+        }
+        .btn-outline,
+        .btn-ghost {
+            background: var(--db-surface);
+            color: var(--db-ink);
+            border: 1px solid var(--db-border-mid);
+            border-radius: var(--db-r);
+            padding: 10px 19px;
+            font-size: 13.5px;
+            font-weight: 500;
+            box-shadow: var(--db-shadow-xs);
+            transition: all 0.2s ease;
+        }
+        .btn-outline:hover,
+        .btn-ghost:hover {
+            background: var(--db-bg);
+            border-color: var(--db-accent-border);
+            color: var(--db-ink);
+            box-shadow: var(--db-shadow-sm);
+            transform: translateY(-1px);
+        }
+
+        /* ── STAT CARDS ─────────────────────────────── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--db-surface);
+            border: 1px solid var(--db-border);
+            border-radius: var(--db-r-lg);
+            padding: 24px 26px;
+            box-shadow: var(--db-shadow-xs);
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+        }
+        .stat-card:hover { box-shadow: var(--db-shadow-md); transform: translateY(-2px); border-color: var(--db-accent-border); }
+        .stat-card .accent-line { display: none !important; }
+
+        .stat-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.10em;
+            color: var(--db-ink-muted);
+            margin-bottom: 10px;
+        }
+        .stat-value {
+            font-size: 30px;
+            font-weight: 600;
+            color: var(--db-ink);
+            letter-spacing: -0.03em;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        .stat-value.danger { color: #dc2626; }
+        .stat-value.warn   { color: var(--db-ink); }
+        .stat-value.success { color: var(--db-accent); }
+
+        .stat-sub {
+            font-size: 12px;
+            color: var(--db-ink-muted);
+            margin-top: 0;
+        }
+
+        /* ── ARIA PREMIUM WELCOME HERO ──────────────── */
+        .aria-hero {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 56px 20px 24px;
+        }
+        .aria-hero-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            background: var(--db-accent-tint);
+            border: 1px solid var(--db-accent-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: var(--db-shadow-accent);
+        }
+        .aria-hero-title {
+            font-family: var(--db-display);
+            font-weight: 400;
+            font-size: 33px;
+            letter-spacing: -0.01em;
+            color: var(--db-ink);
+            margin-bottom: 10px;
+            line-height: 1.25;
+        }
+        .aria-hero-sub {
+            font-size: 15px;
+            color: var(--db-ink-mid);
+            margin-bottom: 38px;
+        }
+        .aria-suggest-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--db-ink-muted);
+            margin-bottom: 12px;
+            text-align: left;
+        }
+        .aria-suggest-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+        .aria-suggest-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            text-align: left;
+            background: var(--db-surface);
+            border: 1px solid var(--db-border);
+            border-radius: var(--db-r-lg);
+            padding: 13px 16px;
+            cursor: pointer;
+            font-family: var(--db-font);
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease, background 0.18s ease;
+            box-shadow: var(--db-shadow-xs);
+        }
+        .aria-suggest-card:hover {
+            border-color: var(--db-accent-border);
+            box-shadow: var(--db-shadow-sm);
+            transform: translateY(-2px);
+            background: var(--db-accent-tint);
+        }
+        .aria-suggest-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: var(--db-accent-tint);
+            color: var(--db-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.18s ease;
+        }
+        .aria-suggest-card:hover .aria-suggest-icon {
+            background: var(--db-surface);
+        }
+        .aria-suggest-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            min-width: 0;
+        }
+        .aria-suggest-title {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--db-ink);
+        }
+        .aria-suggest-desc {
+            font-size: 12px;
+            color: var(--db-ink-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .aria-suggest-arrow {
+            margin-left: auto;
+            color: var(--db-ink-muted);
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            opacity: 0.6;
+            transition: opacity 0.18s ease, transform 0.18s ease, color 0.18s ease;
+        }
+        .aria-suggest-card:hover .aria-suggest-arrow {
+            opacity: 1;
+            transform: translateX(2px);
+            color: var(--db-accent-deep);
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: 3fr 1.2fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        /* ── SECTION PANEL ──────────────────────────── */
+        .panel {
+            background: var(--db-surface);
+            border: 1px solid var(--db-border);
+            border-radius: var(--db-r-lg);
+            box-shadow: var(--db-shadow-xs);
+            overflow: hidden;
+            margin-bottom: 20px;
+            transition: box-shadow 0.25s ease;
+        }
+        .panel-head {
+            padding: 15px 24px;
+            border-bottom: 1px solid var(--db-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(116,150,111,0.03), transparent);
+        }
+        .panel-head h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--db-ink);
+            letter-spacing: -0.01em;
+        }
+        .panel-body { padding: 18px 24px; }
+
+        /* ── ASSESSMENT ─────────────────────────────── */
+        .assess-header { margin-bottom: 24px; }
+        .assess-header h1 {
+            font-family: var(--db-display);
+            font-weight: 400;
+            font-size: 27px;
+            letter-spacing: -0.01em;
+            color: var(--db-ink);
+            margin-bottom: 8px;
+        }
+        .assess-header p {
+            font-size: 13.5px;
+            color: var(--db-ink-muted);
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        .policy-card {
+            background: var(--db-surface);
+            border: 1px solid var(--db-border);
+            border-radius: var(--db-r-lg);
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            box-shadow: var(--db-shadow-xs);
+        }
+        .pc-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .pc-num {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--db-ink-muted);
+            margin-right: 8px;
+        }
+        .pc-title { font-size: 14px; font-weight: 600; color: var(--db-ink); }
+        .pc-tag {
+            font-size: 10px;
+            font-weight: 500;
+            padding: 2px 6px;
+            background: var(--db-bg);
+            border: 1px solid var(--db-border);
+            color: var(--db-ink-muted);
+            border-radius: 4px;
+        }
+        .pc-criteria {
+            font-size: 13px;
+            color: var(--db-ink-mid);
+            margin-bottom: 14px;
+            padding-left: 0;
+            border-left: none;
+            background: transparent;
+        }
+        .pc-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .ctrl-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--db-ink-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .form-select {
+            width: 100%;
+            background: var(--db-bg);
+            border: 1px solid var(--db-border-mid);
+            border-radius: var(--db-r);
+            padding: 8px 12px;
+            font-size: 13px;
+            color: var(--db-ink);
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+        .form-select:focus {
+            border-color: var(--db-accent);
+        }
+        .form-select:disabled { opacity: 0.5; }
+
+        /* ── ROADMAP ────────────────────────────────── */
+        .roadmap-list { list-style: none; padding: 0; }
+        .roadmap-item {
+            background: var(--db-surface);
+            border: 1px solid var(--db-border);
+            border-radius: var(--db-r-lg);
+            padding: 18px 22px;
+            margin-bottom: 10px;
+            box-shadow: var(--db-shadow-xs);
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            transition: box-shadow 0.22s ease, transform 0.22s ease;
+        }
+        .roadmap-item:hover { box-shadow: var(--db-shadow-sm); transform: translateY(-1px); }
+        .road-step {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            background: var(--db-accent-tint);
+            border: 1px solid var(--db-accent-border);
+            color: var(--db-accent);
+            font-size: 12px; font-weight: 600;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .road-content h4 { font-size: 14px; font-weight: 600; color: var(--db-ink); margin-bottom: 3px; }
+        .road-content p { font-size: 13px; color: var(--db-ink-mid); line-height: 1.55; }
+        .road-tag {
+            font-size: 11px; font-weight: 500;
+            padding: 2px 8px;
+            background: var(--db-bg);
+            border: 1px solid var(--db-border);
+            border-radius: 4px;
+            color: var(--db-ink-muted);
+            margin-left: auto;
+            flex-shrink: 0;
+            text-transform: none;
+        }
+
+        /* ── RESOURCES ──────────────────────────────── */
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+        }
+        .resource-card {
+            background: var(--db-surface);
+            border: 1px solid var(--db-border);
+            border-radius: var(--db-r-lg);
+            padding: 17px 20px;
+            margin-bottom: 0;
+            display: flex; gap: 14px; align-items: flex-start;
+            text-decoration: none; color: inherit;
+            box-shadow: var(--db-shadow-xs);
+            transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+        }
+        .resource-card:hover { border-color: var(--db-accent-border); box-shadow: var(--db-shadow-md); transform: translateY(-2px); }
+        .res-icon {
+            width: 30px; height: 30px;
+            border-radius: 6px;
+            background: var(--db-accent-tint);
+            border: 1px solid var(--db-accent-border);
+            color: var(--db-accent);
+            font-size: 12px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .res-title { font-size: 13.5px; font-weight: 600; color: var(--db-ink); }
+        .res-desc { font-size: 12.5px; color: var(--db-ink-mid); line-height: 1.45; }
+        .res-type { display: none; }
+
+        /* ── DEADLINES LIST ─────────────────────────── */
+        .deadline-list {
+            background: var(--db-surface);
+            border: 1px solid var(--db-border);
+            border-radius: var(--db-r-lg);
+            padding: 6px 0;
+            box-shadow: var(--db-shadow-xs);
+            list-style: none;
+        }
+        .deadline-item {
+            padding: 13px 22px;
+            border-bottom: 1px solid var(--db-border);
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .deadline-item:last-child { border-bottom: none; }
+        .dl-date {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--db-ink-muted);
+            background: var(--db-bg);
+            border: 1px solid var(--db-border);
+            border-radius: 4px;
+            padding: 2px 8px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+        .dl-date.urgent {
+            color: #ef4444;
+            background: rgba(239,68,68,0.05);
+            border-color: rgba(239,68,68,0.15);
+        }
+        .dl-text { font-size: 13.5px; color: var(--db-ink-mid); line-height: 1.5; }
+        .dl-text strong { color: var(--db-ink); font-weight: 500; }
+
+        /* ── QUICK ACTIONS ──────────────────────────── */
+        .quick-grid .panel:last-child .panel-body {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .quick-grid .panel:last-child .btn,
+        .quick-grid .panel:last-child a.btn {
+            background: var(--db-surface) !important;
+            border: 1px solid var(--db-border) !important;
+            border-radius: var(--db-r) !important;
+            padding: 12px 16px !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            color: var(--db-ink) !important;
+            cursor: pointer !important;
+            transition: all 0.15s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            text-decoration: none !important;
+            width: 100% !important;
+            box-shadow: none !important;
+            justify-content: flex-start !important;
+        }
+        .quick-grid .panel:last-child .btn:hover,
+        .quick-grid .panel:last-child a.btn:hover {
+            border-color: var(--db-accent-border) !important;
+            background: var(--db-accent-tint) !important;
+            color: var(--db-accent) !important;
+            transform: none !important;
+        }
+        .quick-grid .panel:last-child .btn svg {
+            margin-right: 0 !important;
+            flex-shrink: 0;
+        }
+
+        /* ── TABLES ─────────────────────────────────── */
+        .gap-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--db-surface);
+        }
+        .gap-table th {
+            background: var(--db-bg);
+            padding: 10px 16px;
+            font-size: 10.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--db-ink-muted);
+            border-bottom: 1px solid var(--db-border);
+            text-align: left;
+        }
+        .gap-table td {
+            padding: 12px 16px;
+            font-size: 13.5px;
+            color: var(--db-ink-mid);
+            border-bottom: 1px solid var(--db-border);
+            text-align: left;
+        }
+        .gap-table tr:last-child td { border-bottom: none; }
+        .gap-table tbody tr:hover td { background: var(--db-bg); }
+        .gap-table td:first-child { font-weight: 500; color: var(--db-ink); }
+
+        .badge {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: none;
+            display: inline-block;
+        }
+        .badge-high { background: rgba(239,68,68,0.05); color: #ef4444; border: 1px solid rgba(239,68,68,0.15); }
+        .badge-med  { background: rgba(245,158,11,0.05); color: #f59e0b; border: 1px solid rgba(245,158,11,0.15); }
+        .badge-low  { background: rgba(59,130,246,0.05); color: #3b82f6; border: 1px solid rgba(59,130,246,0.15); }
+
+        .status-red   { color: #ef4444; font-weight: 500; }
+        .status-amber { color: #f59e0b; font-weight: 500; }
+        .status-green { color: #10b981; font-weight: 500; }
+
+
+
+        /* ── LOGIN + REGISTER FORMS ─────────────────── */
+        #auth-modal {
+            position: fixed; inset: 0;
+            background: rgba(26,26,26,0.3);
+            backdrop-filter: blur(4px);
+            z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #auth-modal > div {
+            background: var(--db-surface) !important;
+            border: 1px solid var(--db-border) !important;
+            border-radius: var(--db-r-lg) !important;
+            padding: 32px 28px !important;
+            max-width: 380px !important;
+            width: 100% !important;
+            box-shadow: var(--db-shadow-sm) !important;
+            position: relative;
+        }
+        #auth-modal img {
+            background: transparent !important;
+            mix-blend-mode: multiply !important;
+        }
+        #auth-modal h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; color: var(--db-ink); }
+
+        #auth-modal .chat-input {
+            background: var(--db-bg) !important;
+            border: 1px solid var(--db-border-mid) !important;
+            border-radius: var(--db-r) !important;
+            padding: 9px 13px !important;
+            font-size: 13.5px !important;
+            font-family: var(--db-font) !important;
+            color: var(--db-ink) !important;
+            width: 100% !important;
+            outline: none !important;
+            transition: border-color 0.15s ease;
+        }
+        #auth-modal .chat-input:focus {
+            border-color: var(--db-accent) !important;
+            box-shadow: 0 0 0 3px rgba(122,155,118,0.14) !important;
+        }
+
+        #auth-market-form button {
+            background: var(--db-surface) !important;
+            border: 1px solid var(--db-border) !important;
+            border-radius: var(--db-r-lg) !important;
+            padding: 22px 24px !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            width: 100% !important;
+            box-shadow: none !important;
+            margin-bottom: 12px;
+        }
+        #auth-market-form button:hover {
+            border-color: var(--db-accent-border) !important;
+            box-shadow: var(--db-shadow-sm) !important;
+            transform: translateY(-2px) !important;
+            background: var(--db-surface) !important;
+        }
+        #auth-market-form button span { font-size: 24px !important; }
+        #auth-market-form button div div:first-child { font-size: 14px !important; color: var(--db-ink) !important; font-weight: 600 !important; }
+        #auth-market-form button div div:last-child { font-size: 11.5px !important; color: var(--db-ink-muted) !important; }
+
+        .page-body.no-pad {
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+
+        /* ── ARIA FULL-SIZE VIEW ─────────────────────── */
+        #view-aria {
+            /* fills the entire .page-body when .no-pad is active */
+            height: 100%;
+        }
+
+        /* Centered reading column inside ariaBody */
+        #ariaBody > * {
+            max-width: 760px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ── RESPONSIVE ─────────────────────────────── */
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .quick-grid { grid-template-columns: 1fr; }
+            .pc-controls { grid-template-columns: 1fr; }
+
+            /* Mobile chat layout */
+            .aria-msg-user, .aria-msg-bot {
+                max-width: 88% !important;
+            }
+            
+            #ariaBody {
+                padding: 20px 24px !important;
+            }
+            
+            #aria-input-bar {
+                padding: 12px 16px !important;
+            }
+        }
+
+        /* ── TOAST ──────────────────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--db-ink);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 10px 16px;
+            border-radius: 6px;
+            z-index: 99999;
+            box-shadow: var(--db-shadow-sm);
+            animation: slideInToast 0.2s ease, fadeOutToast 0.2s 2.8s ease forwards;
+        }
+        @keyframes slideInToast {
+            from { transform: translateY(8px); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeOutToast {
+            to { opacity: 0; transform: translateY(-4px); }
+        }
+
+.view-title {
+    font-family: var(--db-display);
+    font-size: 27px;
+    font-weight: 400;
+    color: var(--db-ink);
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+}
+.view-subtitle {
+    font-size: 13.5px;
+    color: var(--db-ink-muted);
+    margin-bottom: 28px;
+    line-height: 1.6;
+}
+
+@keyframes ariaPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+.aria-msg-bot {
+    align-self: flex-start;
+    max-width: 72%;
+    background: var(--db-surface);
+    border: 1px solid var(--db-border);
+    border-radius: 4px 16px 16px 16px;
+    padding: 15px 19px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--db-ink);
+    box-shadow: var(--db-shadow-sm);
+}
+
+.aria-msg-user {
+    align-self: flex-end;
+    max-width: 72%;
+    background: var(--db-accent-gradient);
+    border-radius: 16px 4px 16px 16px;
+    padding: 12px 19px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #fff;
+    box-shadow: var(--db-shadow-accent);
+}
+
+.aria-typing {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 14px 18px;
+    background: var(--db-surface);
+    border: 1px solid var(--db-border);
+    border-radius: 4px 14px 14px 14px;
+    box-shadow: var(--db-shadow-xs);
+}
+
+.aria-typing span {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--db-ink-muted);
+    animation: ariaDot 1.2s ease infinite;
+}
+.aria-typing span:nth-child(2) { animation-delay: 0.2s; }
+.aria-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+.aria-chip {
+    font-family: var(--db-font);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--db-ink-mid);
+    background: var(--db-bg);
+    border: 1px solid var(--db-border-mid);
+    border-radius: 20px;
+    padding: 7px 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.18s ease;
+}
+.aria-chip:hover {
+    background: var(--db-accent-tint);
+    border-color: var(--db-accent-border);
+    color: var(--db-accent-deep);
+    transform: translateY(-1px);
+}
+
+@keyframes ariaDot {
+    0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+}
+
+/* ── CARBON CALCULATOR ─────────────────────── */
+.calc-tab-btn {
+  padding: 10px 18px;
+  border: 1px solid var(--db-border);
+  border-radius: 8px;
+  background: var(--db-surface);
+  color: var(--db-ink);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.calc-tab-btn.active {
+  background: var(--db-accent-gradient);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: var(--db-shadow-accent);
+}
+.guided-step {
+  display: none;
+  animation: fadeInStep 0.25s ease;
+}
+.guided-step.active {
+  display: block;
+}
+@keyframes fadeInStep {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.guided-step-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--db-ink);
+}
+.radio-row {
+  display: flex;
+  gap: 16px;
+}
+.radio-opt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--db-border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  margin: 0 auto;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <img src="logo.png?v=4.2" alt="The Climate Architects" style="background: transparent; mix-blend-mode: multiply; height:36px;width:auto;margin-bottom:6px;display:block;">
+        <div class="logo-sub">ESG Intelligence Platform</div>
+        <div style="height:1px;background:linear-gradient(90deg,rgba(122,155,118,0.3),transparent);margin-top:16px;margin-left:-20px;margin-right:-20px;"></div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-label">Main</div>
+        <button class="nav-item active" onclick="showView('aria')" style="margin-top:2px;">
+            <span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+            Ask AI Advisor
+        </button>
+        <button class="nav-item" onclick="showView('assessment')">
+            <span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> ESG Gap Analysis
+        </button>
+        <button class="nav-item" onclick="showView('roadmap')">
+            <span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 3 20 9 16 15 20 21 16 21 2 15 6 9 2 3 6"/></svg></span> Action Roadmap
+        </button>
+        <button class="nav-item" onclick="showView('resources')">
+            <span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span> Resource Hub
+        </button>
+        <button class="nav-item" onclick="showView('calculator')">
+          <span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 2 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span> Carbon Calculator
+          <span class="nav-badge" style="background:var(--db-accent-gradient);color:#fff;border-color:transparent;">NEW</span>
+        </button>
+        <div class="nav-label" style="margin-top:8px;">Tools</div>
+        <button class="nav-item" onclick="showView('reports')">
+            <span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span> My Reports
+            <span class="nav-badge green" id="reports-badge">0</span>
+        </button>
+        <button class="nav-item" id="admin-nav-item" style="display:none;" onclick="showView('admin')">
+            <span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg></span> Admin Panel
+        </button>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-chip" id="user-chip">
+            <div class="user-avatar" id="sidebar-avatar">?</div>
+            <div class="user-info">
+                <div class="user-name" id="sidebar-name">Loading…</div>
+                <div class="user-role" id="sidebar-plan">Free Plan</div>
+            </div>
+        </div>
+        
+        <a href="index.html" class="back-btn">Back to Website</a>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+    <header class="topbar">
+        <div class="topbar-left" style="display:flex;align-items:center;gap:14px;">
+            
+            <div>
+                <h2 id="topbar-title">AI Advisor</h2>
+                <p id="topbar-sub">AI Copilot — ESG Compliance Assistant</p>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button onclick="showMarketModal()" style="font-size:12px;font-weight:500;color:var(--db-ink-muted);background:transparent;border:1px solid var(--db-border);border-radius:6px;padding:5px 12px;cursor:pointer;transition:all 0.15s ease;font-family:var(--db-font);" onmouseover="this.style.color=getComputedStyle(document.documentElement).getPropertyValue('--db-ink');this.style.borderColor='var(--db-border-mid')'" onmouseout="this.style.color=getComputedStyle(document.documentElement).getPropertyValue('--db-ink-muted');this.style.borderColor='var(--db-border)'">Switch Market →</button>
+            <span class="pill-tag">SG Compliance</span>
+            <span class="pill-tag" id="date-tag">—</span>
+        </div>
+    </header>
+
+    <div class="page-body">
+
+        <!-- ══ ASSESSMENT VIEW ══ -->
+        <div class="view" id="view-assessment">
+            <div class="assess-header">
+                <h1 class="view-title">ESG Readiness Audit</h1>
+                <p class="view-subtitle">Self-assess against Singapore's 7 key ESG regulatory frameworks. Takes under 3 minutes.</p>
+            </div>
+            <div id="questions-container"></div>
+            <div style="text-align:center; margin-top:36px; padding-bottom:40px;">
+                <button class="btn btn-solid" style="padding:14px 36px;font-size:15px;" onclick="generateReport()">Run AI Gap Analysis</button>
+            </div>
+        </div>
+
+        <!-- ══ RESULTS VIEW ══ -->
+        <div class="view" id="view-results">
+            <div class="result-header">
+                <h1>Your ESG Diagnostic Results</h1>
+                <p>Based on Singapore's regulatory frameworks and your inputs — here is your current standing.</p>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card" id="res-score-card">
+                    <div id="res-score-accent" style="display:none;"></div>
+                    <div class="stat-label">Compliance Score</div>
+                    <div class="stat-value" id="res-score">0%</div>
+                    <div class="stat-sub" id="res-score-text">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">High Priority Gaps</div>
+                    <div class="stat-value danger" id="res-high">0</div>
+                    <div class="stat-sub">Items needing immediate action</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Applicable Frameworks</div>
+                    <div class="stat-value warn" id="res-applicable">0</div>
+                    <div class="stat-sub">Regulations touching your business</div>
+                </div>
+            </div>
+
+            <div class="panel" style="margin-bottom:28px;">
+                <div class="panel-head">
+                    <h3>Action Plan & Identified Gaps</h3>
+                    <a href="index.html#bookCallModal" class="btn btn-solid" style="padding:8px 16px;font-size:12px;">Get Expert Help →</a>
+                </div>
+                <table class="gap-table">
+                    <thead>
+                        <tr>
+                            <th>Regulation</th>
+                            <th>Current Status</th>
+                            <th>Priority</th>
+                            <th>Required Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gap-table-body"></tbody>
+                </table>
+            </div>
+
+            <div class="panel" style="margin-bottom:28px;" id="ai-insight-panel">
+                <div class="panel-head">
+                    <h3>AI Insight Summary</h3>
+                    <span class="pill-tag">Powered by Claude</span>
+                </div>
+                <div class="panel-body" id="ai-insight-body" style="font-size:14px;line-height:1.7;color:var(--text-mid);">
+                    <em style="color:var(--text-soft);">Generating personalised analysis…</em>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:12px;justify-content:center;padding-bottom:40px;">
+                <button class="btn btn-ghost" onclick="showView('assessment')">Retake Assessment</button>
+                <button class="btn btn-ghost" onclick="window.print()">Print Report</button>
+                <button class="btn btn-solid" onclick="showView('roadmap')">View Action Roadmap</button>
+            </div>
+        </div>
+
+        <!-- ══ ROADMAP VIEW ══ -->
+        <div class="view" id="view-roadmap">
+            <div class="assess-header">
+                <h1 class="view-title">90-Day Action Roadmap</h1>
+                <p class="view-subtitle">A structured plan to move from gaps to compliance — built on Singapore's regulatory requirements.</p>
+            </div>
+
+            <div class="quick-grid">
+                <div class="panel">
+                    <div class="panel-head"><h3>Phase-by-Phase Plan</h3></div>
+                    <div class="panel-body">
+                        <ul class="roadmap-list">
+                            <li class="roadmap-item">
+                                <div class="road-step">1</div>
+                                <div class="road-content">
+                                    <h4>Baseline Operational Audit</h4>
+                                    <p>Map your energy, water, waste and emission data against applicable thresholds. Identify which frameworks legally apply to your business.</p>
+                                    <span class="road-tag q1">Week 1–2</span>
+                                </div>
+                            </li>
+                            <li class="roadmap-item">
+                                <div class="road-step">2</div>
+                                <div class="road-content">
+                                    <h4>Appoint Compliance Officers</h4>
+                                    <p>Register a certified Energy Manager (NEA) and Water Efficiency Manager if applicable. Set up internal reporting cadences.</p>
+                                    <span class="road-tag q1">Week 2–4</span>
+                                </div>
+                            </li>
+                            <li class="roadmap-item">
+                                <div class="road-step">3</div>
+                                <div class="road-content">
+                                    <h4>Data Collection & Systems</h4>
+                                    <p>Install submetering where required. Begin collecting Scope 1 & 2 emission data. Set up packaging tonnage tracking systems.</p>
+                                    <span class="road-tag q2">Week 4–8</span>
+                                </div>
+                            </li>
+                            <li class="roadmap-item">
+                                <div class="road-step">4</div>
+                                <div class="road-content">
+                                    <h4>Submit Mandatory Reports</h4>
+                                    <p>File annual energy & water reports to NEA. Submit packaging 3R plans. Register for Carbon Tax if applicable.</p>
+                                    <span class="road-tag q2">Week 8–10</span>
+                                </div>
+                            </li>
+                            <li class="roadmap-item">
+                                <div class="road-step">5</div>
+                                <div class="road-content">
+                                    <h4>Build Your ESG Strategy</h4>
+                                    <p>Move from compliance to competitive advantage. Set reduction targets, engage stakeholders, and prepare for ISSB climate disclosures.</p>
+                                    <span class="road-tag q3">Week 10–12+</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head"><h3>Key Milestones</h3></div>
+                    <div class="panel-body" style="font-size:13px;color:var(--text-mid);line-height:1.8;display:flex;flex-direction:column;gap:14px;">
+                        <div style="padding:14px 16px;background:var(--db-bg);border-radius:var(--db-r);border:1px solid var(--db-border);">
+                            <strong style="color:var(--text);display:block;margin-bottom:4px;">Immediate (0–30 days)</strong>
+                            Register with NEA, identify applicable thresholds, appoint compliance leads.
+                        </div>
+                        <div style="padding:14px 16px;background:var(--db-bg);border-radius:var(--db-r);border:1px solid var(--db-border);">
+                            <strong style="color:var(--text);display:block;margin-bottom:4px;">Short-term (30–60 days)</strong>
+                            Deploy metering infrastructure, start data collection, submit first reports.
+                        </div>
+                        <div style="padding:14px 16px;background:var(--db-bg);border-radius:var(--db-r);border:1px solid var(--db-border);">
+                            <strong style="color:var(--text);display:block;margin-bottom:4px;">Strategic (60–90 days)</strong>
+                            Set reduction targets, prepare ISSB climate disclosures, build investor narrative.
+                        </div>
+                        <a href="index.html#bookCallModal" class="btn btn-solid" style="width:100%;justify-content:center;margin-top:6px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="margin-right:8px; display:inline-block; vertical-align:middle;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Get Expert Guidance</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ RESOURCES VIEW ══ -->
+        <div class="view" id="view-resources">
+            <div class="assess-header">
+                <h1 class="view-title">Resource Hub</h1>
+                <p class="view-subtitle">Guides, templates, and official references to accelerate your ESG compliance journey.</p>
+            </div>
+            <div class="resource-grid">
+                <a href="https://www.nea.gov.sg/our-services/climate-change-energy-efficiency/energy-efficiency/industrial-sector/mandatory-energy-management-practices" target="_blank" class="resource-card">
+                    <div class="res-icon">E</div>
+                    <div class="res-title">NEA: Mandatory Energy Management</div>
+                    <div class="res-desc">Official guidelines for companies consuming ≥54 TJ annually, including Energy Manager requirements.</div>
+                    <span class="res-type">Official Guide</span>
+                </a>
+                <a href="https://www.nea.gov.sg/our-services/waste-management/mandatory-packaging-reporting" target="_blank" class="resource-card">
+                    <div class="res-icon">P</div>
+                    <div class="res-title">NEA: Mandatory Packaging Reporting</div>
+                    <div class="res-desc">Requirements for brand owners and importers with >S$10M turnover supplying packaged products.</div>
+                    <span class="res-type">Official Guide</span>
+                </a>
+                <a href="https://www.pub.gov.sg/savewater/atwork/waterefficency" target="_blank" class="resource-card">
+                    <div class="res-icon">W</div>
+                    <div class="res-title">PUB: Water Efficiency Management</div>
+                    <div class="res-desc">WEMP guidelines for premises consuming ≥60,000 m³ per year. Includes metering and submission rules.</div>
+                    <span class="res-type">Official Guide</span>
+                </a>
+                <a href="https://www.sgx.com/sustainable-finance/esg-reporting" target="_blank" class="resource-card">
+                    <div class="res-icon">C</div>
+                    <div class="res-title">SGX: ESG Reporting Framework</div>
+                    <div class="res-desc">Listed company mandatory climate disclosures and the roadmap for ISSB IFRS S1 & S2 adoption.</div>
+                    <span class="res-type">Regulatory</span>
+                </a>
+                <a href="https://www.acra.gov.sg/legislation/climate-reporting" target="_blank" class="resource-card">
+                    <div class="res-icon">G</div>
+                    <div class="res-title">ACRA: Climate Reporting (Non-listed)</div>
+                    <div class="res-desc">Mandatory CRD requirements for large non-listed companies from FY2027 (Rev ≥S$1B).</div>
+                    <span class="res-type">Regulatory</span>
+                </a>
+                <div class="resource-card" style="cursor:pointer;" onclick="showView('aria')">
+                    <div class="res-icon">AI</div>
+                    <div class="res-title">Ask Our AI Advisor</div>
+                    <div class="res-desc">Get instant answers on any Singapore ESG regulation, deadline, or compliance requirement.</div>
+                    <span class="res-type" style="cursor:pointer;background:var(--teal);color:#fff;" onclick="showView('aria'); event.stopPropagation();">Open Chat →</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ REPORTS VIEW ══ -->
+        <div class="view" id="view-reports">
+            <div class="assess-header">
+                <h1 class="view-title">My Reports</h1>
+                <p class="view-subtitle">Your saved ESG audit history and compliance progress over time.</p>
+            </div>
+            <div id="reports-loading" style="text-align:center;padding:60px;color:var(--text-soft);">Loading your reports…</div>
+            <div id="reports-empty" style="display:none;" class="panel">
+<div style="text-align:center;padding:72px 40px;">
+    <div style="width:48px;height:48px;border-radius:12px;background:var(--db-accent-tint);border:1px solid var(--db-accent-border);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--db-accent)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+    </div>
+    <h3 style="font-size:15px;font-weight:600;color:var(--db-ink);margin-bottom:6px;">No saved reports yet</h3>
+    <p style="font-size:13px;color:var(--db-ink-muted);max-width:300px;margin:0 auto 24px;line-height:1.6;">Complete your first ESG audit and results will be saved here automatically.</p>
+    <button class="btn btn-solid" onclick="showView('assessment')" style="padding:10px 22px;font-size:13.5px;">Run Your First Audit</button>
+</div>
+            </div>
+            <div id="reports-list" style="display:none;"></div>
+        </div>
+
+        <!-- ══ CARBON CALCULATOR VIEW ══ -->
+        <div class="view" id="view-calculator">
+          <div class="assess-header">
+            <h1 class="view-title">Carbon Calculator</h1>
+            <p class="view-subtitle">Calculate your Scope 1 and Scope 2 emissions — choose how you'd like to provide your data.</p>
+          </div>
+
+          <!-- Tab switcher -->
+          <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;">
+            <button id="calc-tab-guided" class="calc-tab-btn active" onclick="switchCalcTab('guided')">
+              🧭 Guided Questions
+            </button>
+            <button id="calc-tab-paste" class="calc-tab-btn" onclick="switchCalcTab('paste')">
+              📋 Paste Text
+            </button>
+            <button id="calc-tab-pdf" class="calc-tab-btn" onclick="switchCalcTab('pdf')">
+              📄 Upload PDF
+            </button>
+          </div>
+
+          <!-- ═══ GUIDED QUESTIONS PANEL ═══ -->
+          <div id="calc-panel-guided" class="calc-panel">
+
+            <!-- Progress bar -->
+            <div style="margin-bottom:24px;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--db-ink-muted);margin-bottom:6px;">
+                <span id="guided-step-label">Step 1 of 8</span>
+                <span id="guided-percent">12%</span>
+              </div>
+              <div style="height:6px;background:var(--db-border);border-radius:100px;overflow:hidden;">
+                <div id="guided-progress-bar" style="height:100%;width:12%;background:var(--teal);border-radius:100px;transition:width 0.3s ease;"></div>
+              </div>
+            </div>
+
+            <!-- Question groups — 2 questions revealed per step, 8 steps total = 16 questions -->
+            <form id="guided-form">
+
+              <!-- STEP 1: Company + Country -->
+              <div class="guided-step active" data-step="1">
+                <h3 class="guided-step-title">Tell us about your facility</h3>
+                <div class="ctrl-group" style="margin-bottom:16px;">
+                  <label>Company / Facility name</label>
+                  <input type="text" id="gq-company" class="form-select" placeholder="e.g. Apex Manufacturing Ltd">
+                </div>
+                <div class="ctrl-group" style="margin-bottom:16px;">
+                  <label>Country of operation</label>
+                  <select id="gq-country" class="form-select">
+                    <option value="">Select country</option>
+                    <option value="singapore">Singapore</option>
+                    <option value="malaysia">Malaysia</option>
+                    <option value="indonesia">Indonesia</option>
+                    <option value="thailand">Thailand</option>
+                    <option value="vietnam">Vietnam</option>
+                    <option value="philippines">Philippines</option>
+                    <option value="bangladesh">Bangladesh</option>
+                    <option value="india">India</option>
+                    <option value="china">China</option>
+                    <option value="germany">Germany</option>
+                    <option value="uk">United Kingdom</option>
+                    <option value="usa">United States</option>
+                    <option value="australia">Australia</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- STEP 2: Industry + Reporting period -->
+              <div class="guided-step" data-step="2">
+                <h3 class="guided-step-title">Business context</h3>
+                <div class="ctrl-group" style="margin-bottom:16px;">
+                  <label>Industry / sector</label>
+                  <select id="gq-industry" class="form-select">
+                    <option value="">Select industry</option>
+                    <option value="manufacturing">Manufacturing</option>
+                    <option value="textiles">Textiles / Garments</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="food-beverage">Food & Beverage</option>
+                    <option value="chemicals">Chemicals</option>
+                    <option value="logistics">Logistics / Warehousing</option>
+                    <option value="office">Office / Services</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="ctrl-group" style="margin-bottom:16px;">
+                  <label>Reporting period</label>
+                  <div style="display:flex;gap:12px;">
+                    <input type="date" id="gq-period-start" class="form-select" style="flex:1;">
+                    <input type="date" id="gq-period-end" class="form-select" style="flex:1;">
+                  </div>
+                </div>
+              </div>
+
+              <!-- STEP 3: Electricity source -->
+              <div class="guided-step" data-step="3">
+                <h3 class="guided-step-title">Electricity — Scope 2</h3>
+                <div class="ctrl-group" style="margin-bottom:16px;">
+                  <label>Do you have an electricity bill for this period?</label>
+                  <div class="radio-row">
+                    <label class="radio-opt"><input type="radio" name="gq-has-elec" value="yes" checked> Yes</label>
+                    <label class="radio-opt"><input type="radio" name="gq-has-elec" value="no"> No / Not applicable</label>
+                  </div>
+                </div>
+                <div class="ctrl-group" style="margin-bottom:16px;">
+                  <label>Total electricity consumed (kWh)</label>
+                  <input type="number" id="gq-electricity-kwh" class="form-select" placeholder="e.g. 24400">
+                </div>
+              </div>
+
+              <!-- STEP 4: Renewable electricity -->
+              <div class="guided-step" data-step="4">
+                <h3 class="guided-step-title">Renewable energy</h3>
+                <div class="ctrl-group" style="margin-bottom:16px;">
+                  <label>Do you purchase renewable energy certificates (RECs) or on-site solar?</label>
+                  <div class="radio-row">
+                    <label class="radio-opt"><input type="radio" name="gq-has-renewable" value="yes"> Yes</label>
+                    <label class="radio-opt"><input type="radio" name="gq-has-renewable" value="no" checked> No</label>
+                  </div>
+                </div>
+                <div class="ctrl-group" style="margin-bottom:16px;">
+                  <label>If yes, what % of electricity is renewable?</label>
+                  <input type="number" id="gq-renewable-pct" class="form-select" placeholder="e.g. 20" min="0" max="100">
+                </div>
+              </div>
+
+              <!-- STEP 5: Fuel type -->
+              <div class="guided-step" data-step="5">
+                <h3 class="guided-step-title">Fuel combustion — Scope 1</h3>
+                <div class="ctrl-group" style="margin-bottom:16px;">
+                  <label>Primary fuel type used on-site</label>
+                  <select id="gq-fuel-type" class="form-select">
+                    <option value="">None / Not applicable</option>
+                    <option value="natural gas">Natural Gas</option>
+                    <option value="diesel">Diesel</option>
+                    <option value="petrol">Petrol / Gasoline</option>
+                    <option value="lpg">LPG</option>
+                    <option value="coal">Coal</option>
+                    <option value="heavy fuel oil">Heavy Fuel Oil</option>
+                    <option value="biomass">Biomass</option>
+                  </select>
+                </div>
+                <div class="ctrl-group" style="margin-bottom:16px;">
+                  <label>Quantity consumed (specify unit in the amount, e.g. "1140.7 Therms")</label>
+                  <input type="text" id="gq-fuel-quantity" class="form-select" placeholder="e.g. 1140.7 Therms">
+                </div>
+              </div>
+
+              <!-- STEP 6: Vehicle fleet -->
+              <div class="guided-step" data-step="6">
+                <h3 class="guided-step-title">Company vehicles</h3>
+                <div class="ctrl-group" style="margin-bottom:16px;">
+                  <label>Do you operate company-owned vehicles?</label>
+                  <div class="radio-row">
+                    <label class="radio-opt"><input type="radio" name="gq-has-vehicles" value="yes"> Yes</label>
+                    <label class="radio-opt"><input type="radio" name="gq-has-vehicles" value="no" checked> No</label>
+                  </div>
+                </div>
+                <div class="ctrl-group" style="margin-bottom:16px;">
+                  <label>Total fuel used by vehicles (litres, if known)</label>
+                  <input type="number" id="gq-vehicle-fuel-litres" class="form-select" placeholder="e.g. 500">
+                </div>
+              </div>
+
+              <!-- STEP 7: Refrigerants -->
+              <div class="guided-step" data-step="7">
+                <h3 class="guided-step-title">Refrigerants & cooling</h3>
+                <div class="ctrl-group" style="margin-bottom:16px;">
+                  <label>Do you use industrial refrigeration or large-scale air conditioning?</label>
+                  <div class="radio-row">
+                    <label class="radio-opt"><input type="radio" name="gq-has-refrigerant" value="yes"> Yes</label>
+                    <label class="radio-opt"><input type="radio" name="gq-has-refrigerant" value="no" checked> No</label>
+                  </div>
+                </div>
+                <div class="ctrl-group" style="margin-bottom:16px;">
+                  <label>Estimated refrigerant top-up per year (kg, if known)</label>
+                  <input type="number" id="gq-refrigerant-kg" class="form-select" placeholder="e.g. 5">
+                </div>
+              </div>
+
+              <!-- STEP 8: Confirmation -->
+              <div class="guided-step" data-step="8">
+                <h3 class="guided-step-title">Review & calculate</h3>
+                <p style="font-size:14px;color:var(--db-ink-muted);margin-bottom:16px;">
+                  You're ready. Click Calculate to see your Scope 1 and Scope 2 emissions breakdown.
+                </p>
+                <div id="guided-summary-preview" style="background:var(--db-surface);border:1px solid var(--db-border);border-radius:8px;padding:16px;font-size:13px;color:var(--db-ink-muted);"></div>
+              </div>
+
+            </form>
+
+            <!-- Navigation buttons -->
+            <div style="display:flex;justify-content:space-between;margin-top:24px;">
+              <button type="button" id="guided-back-btn" class="btn btn-outline" onclick="guidedGoBack()" style="visibility:hidden;">← Back</button>
+              <button type="button" id="guided-next-btn" class="btn btn-teal" onclick="guidedGoNext()">Next →</button>
+            </div>
+          </div>
+
+          <!-- ═══ PASTE TEXT PANEL ═══ -->
+          <div id="calc-panel-paste" class="calc-panel" style="display:none;">
+            <div class="ctrl-group" style="margin-bottom:16px;">
+              <label>Paste your invoice, utility bill, or delivery note text below</label>
+              <textarea id="calc-paste-input" rows="10" placeholder="Paste document text here..." style="width:100%;padding:14px;border:1px solid var(--db-border);border-radius:8px;font-size:14px;line-height:1.6;resize:vertical;"></textarea>
+            </div>
+            <button class="btn btn-teal" onclick="analyseCalcText()" id="calc-paste-btn">Analyse Text →</button>
+          </div>
+
+          <!-- ═══ UPLOAD PDF PANEL ═══ -->
+          <div id="calc-panel-pdf" class="calc-panel" style="display:none;">
+            <div id="calc-upload-box" style="border:2px dashed var(--db-border);border-radius:12px;padding:48px 24px;text-align:center;cursor:pointer;" onclick="document.getElementById('calc-file-input').click()">
+              <div style="font-size:32px;margin-bottom:12px;">📄</div>
+              <p style="font-weight:600;margin-bottom:4px;">Drop your PDF here, or click to browse</p>
+              <p style="font-size:13px;color:var(--db-ink-muted);">Supports PDF invoices, utility bills, delivery notes</p>
+              <input type="file" id="calc-file-input" accept="application/pdf" style="display:none;" onchange="handleCalcFile(event)">
+            </div>
+            <div id="calc-file-info" style="display:none;margin-top:12px;font-size:13px;color:var(--db-ink-muted);"></div>
+            <button class="btn btn-teal" onclick="analyseCalcPDF()" id="calc-pdf-btn" style="display:none;margin-top:16px;">Analyse PDF →</button>
+          </div>
+
+          <!-- Shared model selector (applies to paste + PDF modes) -->
+          <div id="calc-model-selector" style="margin-top:20px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--db-ink-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">AI Model</label>
+            <select id="calc-model-select" style="padding:8px 12px;border:1px solid var(--db-border);border-radius:8px;">
+              <option value="gemma-free">⚡ Gemma 3 27B — Free (Recommended)</option>
+              <option value="qwen-free">🔷 Qwen 2.5 VL 32B — Free</option>
+              <option value="gemini-flash">✨ Gemini 2.0 Flash — Fast (paid)</option>
+              <option value="claude">🧠 Claude Sonnet — Best (paid)</option>
+            </select>
+          </div>
+
+          <!-- Loading / Error / Results (shared across all 3 tabs) -->
+          <div id="calc-loading" style="display:none;text-align:center;padding:32px;">
+            <div class="spinner"></div>
+            <p style="margin-top:12px;color:var(--db-ink-muted);">Calculating your emissions...</p>
+          </div>
+          <div id="calc-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px 18px;border-radius:8px;margin-top:16px;font-size:14px;"></div>
+          <div id="calc-results" style="display:none;margin-top:24px;"></div>
+
+        </div>
+
+        <!-- ══ ASK AI ADVISOR VIEW ══ -->
+        <div class="view active" id="view-aria" style="min-height:0;">
+            <div style="display:flex;height:100%;min-height:0;background:transparent;position:relative;overflow:hidden;">
+
+                <!-- Main Chat Area (full width) -->
+                <div style="flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;background:transparent;">
+                    <!-- Chat topbar -->
+                    <div style="background:rgba(255,255,255,0.85);backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);border-bottom:1px solid var(--db-border);padding:0 26px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <div style="width:7px;height:7px;border-radius:50%;background:var(--db-accent);box-shadow:0 0 0 3px var(--db-accent-tint);animation:ariaPulse 2.5s ease infinite;"></div>
+                            <span style="font-size:14px;font-weight:600;color:var(--db-ink);letter-spacing:-0.01em;">AI Copilot</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span class="pill-tag" id="aria-market-badge">Singapore</span>
+                            <button onclick="newAriaChat()" style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--db-ink-mid);background:var(--db-surface);border:1px solid var(--db-border);border-radius:8px;padding:6px 13px;cursor:pointer;font-family:var(--db-font);box-shadow:var(--db-shadow-xs);transition:all 0.2s ease;" onmouseover="this.style.borderColor='var(--db-accent-border)';this.style.color='var(--db-accent-deep)';this.style.boxShadow='var(--db-shadow-sm)'" onmouseout="this.style.borderColor='var(--db-border)';this.style.color='var(--db-ink-mid)';this.style.boxShadow='var(--db-shadow-xs)'">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                New chat
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Message thread: 40px top/bottom, 64px horizontal, column capped at 760px and centred by the CSS rule above -->
+                    <div id="ariaBody" style="flex:1;min-height:0;overflow-y:auto;padding:40px 64px;display:flex;flex-direction:column;gap:16px;"></div>
+
+                    <!-- Input bar -->
+                    <div id="aria-input-bar" style="background:var(--db-surface);border-top:1px solid var(--db-border);padding:14px 24px 18px;flex-shrink:0;box-shadow:0 -8px 24px rgba(20,25,15,0.03);">
+                        <div id="aria-chip-row" style="display:flex;gap:8px;flex-wrap:wrap;max-width:760px;margin:0 auto 10px;">
+                            <button class="aria-chip" onclick="showView('assessment')">Run ESG Gap Analysis</button>
+                            <button class="aria-chip" onclick="showView('calculator')">Calculate Scope 2</button>
+                            <button class="aria-chip" onclick="showView('roadmap')">View Action Roadmap</button>
+                            <button class="aria-chip" onclick="sendAriaMessage('What are my upcoming compliance deadlines?')">Upcoming deadlines</button>
+                        </div>
+                        <div style="display:flex;gap:10px;align-items:flex-end;max-width:760px;margin:0 auto;">
+                            <textarea id="ariaInput" rows="1" placeholder="Ask your AI Copilot anything about ESG compliance…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAriaMessage();}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'" style="flex:1;background:var(--db-bg);border:1px solid var(--db-border-mid);border-radius:12px;padding:12px 16px;font-size:14px;font-family:var(--db-font);color:var(--db-ink);resize:none;outline:none;transition:border-color 0.2s ease, box-shadow 0.2s ease;line-height:1.5;min-height:46px;max-height:120px;" onfocus="this.style.borderColor='var(--db-accent)';this.style.boxShadow='0 0 0 3px var(--db-accent-tint-mid)'" onblur="this.style.borderColor='var(--db-border-mid)';this.style.boxShadow='none'"></textarea>
+                            <button id="ariaSendBtn" onclick="sendAriaMessage()" style="width:46px;height:46px;border-radius:12px;background:var(--db-accent-gradient);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--db-shadow-accent);transition:box-shadow 0.2s ease,transform 0.2s ease,filter 0.2s ease;" onmouseover="this.style.filter='brightness(1.06)';this.style.transform='translateY(-1.5px)'" onmouseout="this.style.filter='none';this.style.transform='translateY(0)'">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                            </button>
+                        </div>
+                        <p style="text-align:center;font-size:11px;color:var(--db-ink-muted);margin-top:9px;">Your AI Copilot provides guidance only. Not legal advice.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ ADMIN VIEW ══ -->
+        <div class="view" id="view-admin">
+            <div class="assess-header">
+                <h1 class="view-title">Admin Panel</h1>
+                <p class="view-subtitle">Platform overview and user management.</p>
+            </div>
+            <div class="stats-row" id="admin-stats-row">
+                <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-value" id="adm-users">—</div></div>
+                <div class="stat-card"><div class="stat-label">New This Week</div><div class="stat-value success" id="adm-new">—</div></div>
+                <div class="stat-card"><div class="stat-label">Total Audits</div><div class="stat-value warn" id="adm-audits">—</div></div>
+                <div class="stat-card"><div class="stat-label">Avg Score</div><div class="stat-value" id="adm-avg">—</div></div>
+            </div>
+            <div class="panel" style="margin-bottom:24px;">
+                <div class="panel-head">
+                    <h3>All Users</h3>
+                    <input id="admin-search" type="text" class="chat-input" style="width:240px;border-radius:8px;" placeholder="Search name / email…" oninput="adminSearch(this.value)">
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="gap-table" id="admin-users-table">
+                        <thead><tr>
+                            <th>Name</th><th>Email</th><th>Company</th><th>Plan</th><th>Audits</th><th>Joined</th><th>Actions</th>
+                        </tr></thead>
+                        <tbody id="admin-users-body"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-soft);">Loading…</td></tr></tbody>
+                    </table>
+                </div>
+                <div style="display:flex;gap:10px;align-items:center;padding:16px 20px;border-top:1px solid var(--border);" id="admin-pagination"></div>
+            </div>
+        </div>
+
+    </div><!-- end .page-body -->
+
+<!-- ══ AUTH MODAL ══ -->
+<div id="auth-modal" style="
+    position:fixed;inset:0;background:rgba(26,26,26,0.4);backdrop-filter:blur(8px);
+    z-index:99999;display:flex;align-items:center;justify-content:center;">
+    <div style="
+        background:var(--panel);border-radius:20px;padding:40px;width:100%;max-width:420px;
+        box-shadow:0 24px 64px rgba(0,0,0,0.10);border:1px solid var(--db-border);
+        animation:fadeUp 0.4s ease both;position:relative;">
+
+        <div style="text-align:center;margin-bottom:28px;">
+            <img src="logo.png?v=4.2" alt="The Climate Architects" style="background: transparent; mix-blend-mode: multiply; height:48px;margin-bottom:12px;">
+            <h2 style="font-family:var(--serif);font-size:24px;" id="auth-modal-title">Welcome Back</h2>
+            <p style="font-size:13px;color:var(--text-soft);margin-top:4px;" id="auth-modal-sub">Sign in to your ESG dashboard</p>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <div id="auth-login-form" style="display:none;"></div>
+
+        <!-- MARKET SELECTION (shown after login) -->
+        <div id="auth-market-form" style="display:none;">
+            <p style="font-size:13px;color:var(--text-mid);text-align:center;margin-bottom:24px;line-height:1.6;">Select the market dashboard you want to access. You can switch between markets at any time.</p>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+                <button onclick="goToMarket('sg')" style="display:flex;align-items:center;gap:16px;padding:18px 20px;background:var(--db-surface);border:1px solid var(--db-border);border-radius:var(--db-r-lg);cursor:pointer;transition:all 0.2s ease;text-align:left;font-family:var(--db-font);width:100%;" onmouseover="this.style.borderColor='rgba(122,155,118,0.4)';this.style.background='rgba(122,155,118,0.04)'" onmouseout="this.style.borderColor='var(--db-border)';this.style.background='var(--db-surface)'">
+                    <span style="font-size:28px;">🇸🇬</span>
+                    <div>
+                        <div style="font-size:14px;font-weight:600;color:var(--db-ink);">Singapore</div>
+                        <div style="font-size:12px;color:var(--db-ink-muted);margin-top:2px;">SGX Reporting · Carbon Tax · ECA · WEMP</div>
+                    </div>
+                    <svg style="margin-left:auto;flex-shrink:0;color:var(--db-ink-muted);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+                <button onclick="goToMarket('eu')" style="display:flex;align-items:center;gap:16px;padding:18px 20px;background:var(--db-surface);border:1px solid var(--db-border);border-radius:var(--db-r-lg);cursor:pointer;transition:all 0.2s ease;text-align:left;font-family:var(--db-font);width:100%;" onmouseover="this.style.borderColor='rgba(122,155,118,0.4)';this.style.background='rgba(122,155,118,0.04)'" onmouseout="this.style.borderColor='var(--db-border)';this.style.background='var(--db-surface)'">
+                    <span style="font-size:28px;">🇪🇺</span>
+                    <div>
+                        <div style="font-size:14px;font-weight:600;color:var(--db-ink);">European Union</div>
+                        <div style="font-size:12px;color:var(--db-ink-muted);margin-top:2px;">CSRD · CBAM · CSDDD · EmpCo · Pay Transparency</div>
+                    </div>
+                    <svg style="margin-left:auto;flex-shrink:0;color:var(--db-ink-muted);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div id="auth-register-form" style="display:none;"></div>
+    </div>
+</div>
+
+
+
+<script>
+const safeStorage = {
+    getItem: (key) => {
+        try { return window['localStorage'].getItem(key); } catch (e) { return null; }
+    },
+    setItem: (key, val) => {
+        try { window['localStorage'].setItem(key, val); } catch (e) {}
+    },
+    removeItem: (key) => {
+        try { window['localStorage'].removeItem(key); } catch (e) {}
+    }
+};
+
+/* ══════════════════════════════════════════════
+   CONFIG — Set your backend URL here
+══════════════════════════════════════════════ */
+const API_BASE = '/api'; // Cloudflare Pages Functions via /functions/api/
+
+/* ══════════════════════════════════════════════
+   AUTH STATE
+══════════════════════════════════════════════ */
+let currentUser = null;
+let authToken   = safeStorage.getItem('tca_token') || null;
+
+function apiHeaders() {
+    return { 'Content-Type': 'application/json', ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}) };
+}
+
+
+/* ══════════════════════════════════════════════
+   CLIENT-SIDE OFFLINE MOCK API FETCH
+══════════════════════════════════════════════ */
+async function apiFetch(path, opts = {}) {
+    const url = new URL('http://localhost' + path);
+    const action = url.searchParams.get('action');
+    const id = url.searchParams.get('id');
+    const method = opts.method ? opts.method.toUpperCase() : 'GET';
+    const body = opts.body ? JSON.parse(opts.body) : null;
+
+    // Fast response delay
+    await new Promise(r => setTimeout(r, 200));
+
+    // Authentication endpoints
+    if (path.startsWith('/auth')) {
+        if (action === 'me') {
+            return {
+                token: authToken || 'mock_token',
+                user: {
+                    full_name: safeStorage.getItem('tca_user_name') || 'Demo User',
+                    email: safeStorage.getItem('tca_user_email') || 'demo@company.com',
+                    company: safeStorage.getItem('tca_user_company') || 'Demo Company Pte Ltd',
+                    industry: 'Technology',
+                    plan: 'pro',
+                    role: 'admin'
+                }
+            };
+        }
+        if (action === 'login') {
+            const email = body.email || 'demo@company.com';
+            const name = email.split('@')[0].toUpperCase();
+            safeStorage.setItem('tca_user_name', name);
+            safeStorage.setItem('tca_user_email', email);
+            safeStorage.setItem('tca_user_company', 'Demo Company');
+            return {
+                token: 'mock_token_123',
+                user: {
+                    full_name: name,
+                    email: email,
+                    company: 'Demo Company',
+                    industry: 'Technology',
+                    plan: 'pro',
+                    role: 'admin'
+                }
+            };
+        }
+        if (action === 'register') {
+            const { full_name, email, company } = body;
+            safeStorage.setItem('tca_user_name', full_name);
+            safeStorage.setItem('tca_user_email', email);
+            safeStorage.setItem('tca_user_company', company);
+            return {
+                token: 'mock_token_123',
+                user: {
+                    full_name,
+                    email,
+                    company,
+                    industry: body.industry || 'Technology',
+                    plan: 'pro',
+                    role: 'admin'
+                }
+            };
+        }
+    }
+
+    // ESG Audits storage (localStorage backed)
+    if (path.startsWith('/audits')) {
+        let audits = JSON.parse(safeStorage.getItem('tca_audits') || '[]');
+        if (method === 'GET') {
+            return audits;
+        }
+        if (method === 'POST') {
+            const newAudit = {
+                id: 'audit_' + Date.now(),
+                created_at: new Date().toISOString(),
+                ...body
+            };
+            audits.unshift(newAudit);
+            safeStorage.setItem('tca_audits', JSON.stringify(audits));
+            return newAudit;
+        }
+        if (method === 'DELETE') {
+            audits = audits.filter(a => a.id !== id);
+            safeStorage.setItem('tca_audits', JSON.stringify(audits));
+            return { success: true };
+        }
+    }
+
+    // AI Advisor Chats
+    if (path.startsWith('/chat')) {
+        if (action === 'insight') {
+            return {
+                insight: "Based on Singapore regulations, your facility shows gaps in Scope 1 emissions reporting. Recommendation: baseline electricity usage data and convert to tCO2e."
+            };
+        }
+        return {
+            reply: "I am the Climate Architects AI Advisor. I can help you with SGX, Carbon Tax, CSRD, and CBAM. Let me know what specific compliance issue you would like to tackle."
+        };
+    }
+
+    // Admin Dashboard stats & users
+    if (path.startsWith('/admin')) {
+        if (action === 'stats') {
+            return {
+                total_users: 154,
+                total_audits: 289,
+                active_plans: { pro: 87, free: 67 }
+            };
+        }
+        if (action === 'users') {
+            return {
+                users: [
+                    { id: '1', full_name: 'Jane Smith', email: 'jane@acme.com', company: 'Acme Pte Ltd', plan: 'pro', role: 'user', created_at: '2026-05-12T08:00:00Z' },
+                    { id: '2', full_name: 'John Doe', email: 'john@capital.com', company: 'Capital Group', plan: 'free', role: 'user', created_at: '2026-06-01T10:30:00Z' }
+                ],
+                total: 2,
+                pages: 1
+            };
+        }
+    }
+
+    return {};
+}
+
+
+// ── Boot: check token ─────────────────────────
+async function boot() {
+    // Client-side auto-authenticate bypass
+    authToken = safeStorage.getItem('tca_token') || 'mock_token';
+    currentUser = {
+        full_name: safeStorage.getItem('tca_user_name') || 'Demo User',
+        email: safeStorage.getItem('tca_user_email') || 'demo@company.com',
+        company: safeStorage.getItem('tca_user_company') || 'Demo Company Pte Ltd',
+        industry: 'Technology',
+        plan: 'pro',
+        role: 'admin'
+    };
+    // Hide auth modal immediately — no market selector on load
+    document.getElementById('auth-modal').style.display = 'none';
+
+    // Populate sidebar user info
+    const nameEl = document.getElementById('sidebar-name');
+    const planEl = document.getElementById('sidebar-plan');
+    const avatarEl = document.getElementById('sidebar-avatar');
+    if (nameEl) nameEl.textContent = currentUser.full_name;
+    if (planEl) {
+        planEl.textContent = currentUser.plan === 'pro' ? 'Pro Plan' : 'Free Plan';
+        planEl.classList.toggle('pro', currentUser.plan === 'pro');
+    }
+    if (avatarEl) avatarEl.textContent = currentUser.full_name.charAt(0).toUpperCase();
+
+    // Restore saved view and chat state
+    const savedView = safeStorage.getItem('tca_active_view') || 'aria';
+    showView(savedView);
+}
+
+function onLoginSuccess() {
+    // Show market selection screen instead of closing modal
+    document.getElementById('auth-login-form').style.display = 'none';
+    document.getElementById('auth-register-form').style.display = 'none';
+    document.getElementById('auth-market-form').style.display = 'block';
+    document.getElementById('auth-modal-title').textContent = 'Choose Your Market';
+    document.getElementById('auth-modal-sub').textContent = 'Which region would you like to access today?';
+}
+
+function goToMarket(market) {
+    safeStorage.setItem('tca_market', market);
+    const isFree = !currentUser || currentUser.plan === 'free';
+    if (market === 'sg') {
+        window.location.href = isFree ? 'dashboard-sg-free.html' : 'dashboard-sg.html';
+    } else {
+        window.location.href = isFree ? 'dashboard-eu-free.html' : 'dashboard-eu.html';
+    }
+}
+
+function logout() {
+    authToken = null;
+    currentUser = null;
+    safeStorage.removeItem('tca_token');
+    showAuthModal();
+}
+
+/* ══════════════════════════════════════════════
+   AUTH MODAL
+══════════════════════════════════════════════ */
+function showAuthModal() {
+    document.getElementById('auth-modal').style.display = 'flex';
+    switchAuth('login');
+}
+
+function switchAuth(mode) {
+    const isLogin = mode === 'login';
+    document.getElementById('auth-login-form').style.display    = isLogin ? 'block' : 'none';
+    document.getElementById('auth-register-form').style.display = isLogin ? 'none'  : 'block';
+    document.getElementById('auth-modal-title').textContent     = isLogin ? 'Welcome Back' : 'Create Account';
+    document.getElementById('auth-modal-sub').textContent       = isLogin ? 'Sign in to your ESG dashboard' : 'Start your ESG compliance journey';
+    document.getElementById('auth-error').style.display = 'none';
+    document.getElementById('auth-error-reg').style.display = 'none';
+}
+
+async function doLogin() {
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const errEl    = document.getElementById('auth-error');
+    const btn      = document.getElementById('login-btn');
+
+    errEl.style.display = 'none';
+    btn.textContent = 'Signing in…'; btn.disabled = true;
+
+    try {
+        const data = await apiFetch('/auth?action=login', { method: 'POST', body: JSON.stringify({ email, password }) });
+        authToken   = data.token;
+        currentUser = data.user;
+        safeStorage.setItem('tca_token', authToken);
+        onLoginSuccess();
+        showToast('Welcome back, ' + currentUser.full_name.split(' ')[0] + '!');
+    } catch (e) {
+        errEl.textContent = e.message;
+        errEl.style.display = 'block';
+    } finally {
+        btn.textContent = 'Sign In'; btn.disabled = false;
+    }
+}
+
+async function doRegister() {
+    const full_name = document.getElementById('reg-name').value.trim();
+    const company   = document.getElementById('reg-company').value.trim();
+    const email     = document.getElementById('reg-email').value.trim();
+    const industry  = document.getElementById('reg-industry').value;
+    const password  = document.getElementById('reg-password').value;
+    const errEl     = document.getElementById('auth-error-reg');
+    const btn       = document.getElementById('register-btn');
+
+    errEl.style.display = 'none';
+    if (!full_name || !email || !password) { errEl.textContent = 'Name, email and password are required.'; errEl.style.display = 'block'; return; }
+
+    btn.textContent = 'Creating account…'; btn.disabled = true;
+
+    try {
+        const data = await apiFetch('/auth?action=register', { method: 'POST', body: JSON.stringify({ full_name, email, company, industry, password }) });
+        authToken   = data.token;
+        currentUser = data.user;
+        safeStorage.setItem('tca_token', authToken);
+        onLoginSuccess();
+        showToast('Account created! Welcome, ' + currentUser.full_name.split(' ')[0] + '.');
+    } catch (e) {
+        errEl.textContent = e.message;
+        errEl.style.display = 'block';
+    } finally {
+        btn.textContent = 'Create Account'; btn.disabled = false;
+    }
+}
+
+/* ══════════════════════════════════════════════
+   NAV & ROUTING
+══════════════════════════════════════════════ */
+const navTitles = {
+    assessment: ['ESG Gap Analysis',     'Self-assess against 7 key frameworks'],
+    results:    ['Your Audit Results',   'Compliance gaps and action items'],
+    roadmap:    ['Action Roadmap',       '90-day compliance plan'],
+    resources:  ['Resource Hub',         'Guides, templates & official references'],
+    reports:    ['My Reports',           'Saved audit history'],
+    admin:      ['Admin Panel',          'User management & platform stats'],
+    aria:       ['AI Advisor',           'AI Copilot — ESG Compliance Assistant'],
+};
+
+function showView(name) {
+    // The Overview tab was retired — send any stale reference (e.g. from a
+    // returning user's saved view) straight to the AI chat home instead.
+    if (!document.getElementById('view-' + name)) name = 'aria';
+
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const el = document.getElementById('view-' + name);
+    if (el) el.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => {
+        if (n.textContent.trim().toLowerCase().includes(
+            name === 'assessment' ? 'esg' :
+            name === 'roadmap' ? 'roadmap' : name === 'resources' ? 'resource' :
+            name === 'reports' ? 'report' : name === 'admin' ? 'admin' : name === 'aria' ? 'advisor' : name)) {
+            n.classList.add('active');
+        }
+    });
+    const t = navTitles[name] || ['Dashboard', ''];
+    document.getElementById('topbar-title').textContent = t[0];
+    document.getElementById('topbar-sub').textContent = t[1];
+    
+    // Toggle no-pad class on .page-body
+    const pageBody = document.querySelector('.page-body');
+    if (pageBody) {
+        pageBody.classList.toggle('no-pad', name === 'aria');
+    }
+
+    if (name === 'aria') {
+        const activeId = safeStorage.getItem('aria_active_id');
+        const conversations = loadConversations();
+        if (activeId && conversations[activeId]) {
+            loadConversation(activeId);
+        } else {
+            const keys = Object.keys(conversations);
+            if (keys.length > 0) {
+                keys.sort((a, b) => conversations[b].updated_at - conversations[a].updated_at);
+                loadConversation(keys[0]);
+            } else {
+                newAriaChat();
+            }
+        }
+    } else {
+        if (pageBody) pageBody.scrollTop = 0;
+    }
+
+    if (name === 'reports') loadReports();
+    if (name === 'admin')   loadAdminStats();
+    
+    safeStorage.setItem('tca_active_view', name);
+}
+
+document.getElementById('date-tag').textContent = new Date().toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' });
+
+/* ══════════════════════════════════════════════
+   POLICY DATABASE
+══════════════════════════════════════════════ */
+const policies = [
+    { id: 'carbon_tax',        category: 'Environmental',    title: 'Carbon Tax (CPA)',                          priority: 'high', criteria: 'Industrial facilities with emissions ≥25,000 tCO2e/year.',                          action: 'Register with NEA; implement emissions verification; budget for $45/tonne from 2026-27.' },
+    { id: 'energy_mgmt',       category: 'Environmental',    title: 'Mandatory Energy Management Practices',     priority: 'high', criteria: 'Companies with operational control consuming ≥54 TJ of energy annually.',             action: 'Appoint certified Energy Manager; submit annual energy use reports to NEA.' },
+    { id: 'water_efficiency',  category: 'Water Management', title: 'Water Efficiency (WEMP)',                   priority: 'high', criteria: 'Premises consuming ≥60,000 m³ of water annually.',                                    action: 'Appoint Water Efficiency Manager; submit WEMP records; install private water meters.' },
+    { id: 'packaging',         category: 'Waste Management', title: 'Mandatory Packaging Reporting',             priority: 'med',  criteria: 'Brand owners/importers with >S$10M turnover supplying packaged goods.',                action: 'Submit annual packaging reports to NEA; develop & submit 3R plans.' },
+    { id: 'food_waste',        category: 'Waste Management', title: 'Food Waste Segregation & Treatment',        priority: 'med',  criteria: 'Industrial/commercial buildings generating significant food waste.',                    action: 'Allocate space for on-site treatment; segregate food waste; submit waste reports.' },
+    { id: 'climate_reporting', category: 'Governance',       title: 'Climate Reporting (Non-listed)',            priority: 'high', criteria: 'Large non-listed companies: Revenue ≥S$1B AND Assets ≥S$500M.',                        action: 'Prepare annual climate-related disclosures per ISSB standards (Scope 1 & 2). Starts FY2027.' },
+    { id: 'e_waste',           category: 'Waste Management', title: 'Extended Producer Responsibility (E-waste)',priority: 'low',  criteria: 'Producers or retailers of regulated electrical and electronic products.',               action: 'Register with NEA; track product records; join Producer Responsibility Scheme (PRS).' },
+];
+
+/* ══════════════════════════════════════════════
+   RENDER ASSESSMENT QUESTIONS
+══════════════════════════════════════════════ */
+function renderQuestions() {
+    const c = document.getElementById('questions-container');
+    c.innerHTML = policies.map((p, i) => `
+        <div class="policy-card">
+            <div class="pc-top">
+                <div style="display:flex;align-items:flex-start;gap:12px;flex:1;">
+                    <div class="pc-num">${i+1}</div>
+                    <div><div class="pc-title">${p.title}</div><span class="pc-tag">${p.category}</span></div>
+                </div>
+            </div>
+            <div class="pc-criteria"><strong>Applies if:</strong> ${p.criteria}</div>
+            <div class="pc-controls">
+                <div class="ctrl-group">
+                    <label>Does this apply to your business?</label>
+                    <select class="form-select apply-select" data-id="${p.id}" onchange="toggleStatus(this)">
+                        <option value="none">— Select —</option>
+                        <option value="yes">Yes, this applies</option>
+                        <option value="no">No, not applicable</option>
+                        <option value="unsure">Not Sure</option>
+                    </select>
+                </div>
+                <div class="ctrl-group">
+                    <label>Current Compliance Status</label>
+                    <select class="form-select status-select" data-id="${p.id}" disabled>
+                        <option value="none">— Select Status —</option>
+                        <option value="compliant">Fully Compliant</option>
+                        <option value="partial">Partial / In Progress</option>
+                        <option value="non_compliant">Non-Compliant</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleStatus(sel) {
+    const id = sel.getAttribute('data-id');
+    const ss = document.querySelector(`.status-select[data-id="${id}"]`);
+    if (sel.value === 'yes') ss.disabled = false;
+    else { ss.disabled = true; ss.value = 'none'; }
+}
+
+/* ══════════════════════════════════════════════
+   GENERATE REPORT + SAVE TO BACKEND
+══════════════════════════════════════════════ */
+let lastAuditData = null;
+
+async function generateReport() {
+    let applicable = 0, compliant = 0, highCount = 0;
+    const gaps = [], answers = {};
+
+    document.querySelectorAll('.apply-select').forEach(sel => {
+        const id = sel.getAttribute('data-id');
+        const applyVal = sel.value;
+        const statusVal = document.querySelector(`.status-select[data-id="${id}"]`).value;
+        const p = policies.find(x => x.id === id);
+        answers[id] = { apply: applyVal, status: statusVal };
+
+        if (applyVal === 'yes') {
+            applicable++;
+            if (statusVal === 'compliant') compliant++;
+            else {
+                if (p.priority === 'high') highCount++;
+                gaps.push({ title: p.title, status: statusVal === 'none' ? 'Status Unknown' : statusVal === 'partial' ? 'Partial' : 'Non-Compliant', action: p.action, priority: p.priority });
+            }
+        } else if (applyVal === 'unsure') {
+            applicable++; highCount++;
+            gaps.push({ title: p.title, status: 'Requires Investigation', action: 'Conduct baseline operational audit to determine if threshold criteria are met.', priority: 'high' });
+        }
+    });
+
+    if (applicable === 0) { showToast('Please select at least one applicable policy first.'); return; }
+
+    const score = Math.round((compliant / applicable) * 100);
+    lastAuditData = { score, applicable, high_gaps: highCount, gaps, answers };
+
+    // Update result cards
+    document.getElementById('res-score').textContent = score + '%';
+    
+    document.getElementById('res-high').textContent = highCount;
+    document.getElementById('res-applicable').textContent = applicable;
+    const scoreText = score >= 80 ? 'Strong compliance posture' : score >= 40 ? 'Moderate — action needed' : 'Critical gaps identified';
+    document.getElementById('res-score-text').textContent = scoreText;
+    const accent = document.getElementById('res-score-accent');
+    accent.className = 'accent-line ' + (score >= 80 ? 'success' : score >= 40 ? 'warn' : 'danger');
+
+    const ovScore = document.getElementById('ov-score');
+    if (ovScore) {
+        ovScore.textContent = score + '%';
+        ovScore.className = 'stat-value ' + (score >= 80 ? 'success' : score >= 40 ? 'warn' : 'danger');
+    }
+    const ovHigh = document.getElementById('ov-high');
+    if (ovHigh) ovHigh.textContent = highCount;
+
+    const tbody = document.getElementById('gap-table-body');
+    if (gaps.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--success);font-weight:700;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="16" height="16" style="display:inline-block;vertical-align:middle;margin-right:8px;color:var(--success);"><polyline points="20 6 9 17 4 12"/></svg> No compliance gaps identified. Excellent work.</td></tr>`;
+    } else {
+        gaps.sort((a,b) => a.priority==='high'?-1:1);
+        tbody.innerHTML = gaps.map(g => {
+            const bc = g.priority==='high'?'badge-high':g.priority==='med'?'badge-med':'badge-low';
+            const pt = g.priority==='high'?'High Risk':g.priority==='med'?'Medium':'Low';
+            const sc = (g.status==='Non-Compliant'||g.status==='Requires Investigation')?'status-red':'status-amber';
+            return `<tr><td style="font-weight:600;">${g.title}</td><td class="${sc}">${g.status}</td><td><span class="badge ${bc}">${pt}</span></td><td style="color:var(--text-mid);line-height:1.5;">${g.action}</td></tr>`;
+        }).join('');
+    }
+
+    showView('results');
+    generateAIInsight(gaps, score, applicable);
+}
+
+/* ══════════════════════════════════════════════
+   AI INSIGHT — via secure backend
+══════════════════════════════════════════════ */
+async function generateAIInsight(gaps, score, applicable) {
+    const insightEl = document.getElementById('ai-insight-body');
+    insightEl.innerHTML = '<div class="msg-typing"><div class="dot-pulse"><span></span><span></span><span></span></div></div>';
+
+    try {
+        const data = await apiFetch('/chat?action=insight', {
+            method: 'POST',
+            body: JSON.stringify({ score, applicable, gaps })
+        });
+        const insight = data.insight || '';
+        insightEl.innerHTML = `<p>${insight}</p>`;
+
+        // Auto-save audit with insight
+        if (lastAuditData) {
+            const saved = await apiFetch('/audits', {
+                method: 'POST',
+                body: JSON.stringify({ ...lastAuditData, ai_insight: insight })
+            });
+            loadReportsBadge();
+            showToast('Audit saved to your reports.');
+        }
+    } catch (e) {
+        const fallback = `Based on your ${score}% score across ${applicable} applicable frameworks, ${gaps.length > 0 ? `you have ${gaps.length} compliance gap(s) to address` : 'you are in good standing'}. The Climate Architects team can help you build a concrete remediation plan.`;
+        insightEl.innerHTML = `<p>${fallback}</p>`;
+        // Try to save without insight
+        if (lastAuditData) {
+            try { await apiFetch('/audits', { method: 'POST', body: JSON.stringify({ ...lastAuditData, ai_insight: fallback }) }); loadReportsBadge(); } catch {}
+        }
+    }
+}
+
+/* ══════════════════════════════════════════════
+   MY REPORTS
+══════════════════════════════════════════════ */
+async function loadReportsBadge() {
+    try {
+        const audits = await apiFetch('/audits');
+        const badge = document.getElementById('reports-badge');
+        badge.textContent = audits.length;
+        badge.style.display = audits.length > 0 ? 'inline-flex' : 'none';
+    } catch {}
+}
+
+async function loadReports() {
+    document.getElementById('reports-loading').style.display = 'block';
+    document.getElementById('reports-empty').style.display = 'none';
+    document.getElementById('reports-list').style.display = 'none';
+
+    try {
+        const audits = await apiFetch('/audits');
+        document.getElementById('reports-loading').style.display = 'none';
+
+        if (audits.length === 0) {
+            document.getElementById('reports-empty').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('reports-list').style.display = 'block';
+        document.getElementById('reports-list').innerHTML = audits.map(a => {
+            const scoreColor = a.score >= 80 ? 'success' : a.score >= 40 ? 'warn' : 'danger';
+            const date = new Date(a.created_at).toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' });
+            return `
+            <div class="panel" style="margin-bottom:16px;">
+                <div class="panel-head">
+                    <h3>ESG Audit — ${date}</h3>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <span class="badge badge-${a.high_gaps>0?'high':'low'}">${a.high_gaps} High Gaps</span>
+                        <button onclick="deleteAudit('${a.id}', this)" class="btn btn-ghost" style="padding:6px 12px;font-size:12px;">Delete</button>
+                    </div>
+                </div>
+                <div class="panel-body" style="display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start;">
+                    <div style="text-align:center;min-width:90px;">
+                        <div class="stat-value ${scoreColor}" style="font-size:42px;">${a.score}%</div>
+                        <div class="stat-sub">Compliance Score</div>
+                    </div>
+                    <div>
+                        <p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:12px;">${a.ai_insight || 'No AI insight recorded.'}</p>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            ${a.gaps.slice(0,3).map(g => `<span class="badge badge-${g.priority==='high'?'high':g.priority==='med'?'med':'low'}">${g.title}</span>`).join('')}
+                            ${a.gaps.length > 3 ? `<span class="badge" style="background:var(--teal-10);color:var(--teal-dark);">+${a.gaps.length-3} more</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    } catch (e) {
+        document.getElementById('reports-loading').innerHTML = `<p style="color:var(--danger);">Could not load reports: ${e.message}</p>`;
+    }
+}
+
+function showMarketModal() {
+    document.getElementById('auth-modal').style.display = 'flex';
+    document.getElementById('auth-login-form').style.display = 'none';
+    document.getElementById('auth-register-form').style.display = 'none';
+    document.getElementById('auth-market-form').style.display = 'block';
+    document.getElementById('auth-modal-title').textContent = 'Switch Market';
+    document.getElementById('auth-modal-sub').textContent = 'Choose which regulatory dashboard to view.';
+}
+
+async function deleteAudit(id, btn) {
+    if (!confirm('Delete this audit?')) return;
+    btn.textContent = '…'; btn.disabled = true;
+    try {
+        await apiFetch('/audits?id=' + id, { method: 'DELETE' });
+        loadReports(); loadReportsBadge();
+        showToast('Audit deleted.');
+    } catch (e) { showToast(e.message); btn.textContent = 'Delete'; btn.disabled = false; }
+}
+
+/* ══════════════════════════════════════════════
+   ADMIN PANEL
+══════════════════════════════════════════════ */
+let adminPage = 1;
+
+async function loadAdminStats() {
+    try {
+        const s = await apiFetch('/admin?action=stats');
+        document.getElementById('adm-users').textContent  = s.totalUsers;
+        document.getElementById('adm-new').textContent    = '+' + s.newThisWeek;
+        document.getElementById('adm-audits').textContent = s.totalAudits;
+        document.getElementById('adm-avg').textContent    = s.avgScore + '%';
+        loadAdminUsers(1);
+    } catch (e) { showToast('Admin load failed: ' + e.message); }
+}
+
+async function loadAdminUsers(page = 1, search = '') {
+    adminPage = page;
+    const tbody = document.getElementById('admin-users-body');
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-soft);">Loading…</td></tr>`;
+
+    try {
+        const data = await apiFetch(`/admin?action=users&page=${page}${search ? '&search='+encodeURIComponent(search) : ''}`);
+        if (data.users.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-soft);">No users found.</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = data.users.map(u => `
+            <tr>
+                <td style="font-weight:600;">${u.full_name}</td>
+                <td style="color:var(--text-mid);">${u.email}</td>
+                <td style="color:var(--text-soft);">${u.company || '—'}</td>
+                <td><span class="badge ${u.plan==='pro'?'badge-med':u.plan==='enterprise'?'badge-high':'badge-low'}">${u.plan}</span></td>
+                <td style="color:var(--text-mid);">—</td>
+                <td style="color:var(--text-soft);font-size:12px;">${new Date(u.created_at).toLocaleDateString('en-SG')}</td>
+                <td>
+                    <select onchange="adminUpdatePlan('${u.id}', this.value)" style="font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);">
+                        <option ${u.plan==='free'?'selected':''} value="free">Free</option>
+                        <option ${u.plan==='pro'?'selected':''} value="pro">Pro</option>
+                        <option ${u.plan==='enterprise'?'selected':''} value="enterprise">Enterprise</option>
+                    </select>
+                    ${u.id !== currentUser?.id ? `<button onclick="adminDeleteUser('${u.id}', this)" style="margin-left:8px;background:none;border:none;cursor:pointer;color:var(--danger);font-size:13px;">Delete</button>` : ''}
+                </td>
+            </tr>
+        `).join('');
+
+        // Pagination
+        const pag = document.getElementById('admin-pagination');
+        pag.innerHTML = '';
+        for (let i = 1; i <= data.pages; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'btn ' + (i === page ? 'btn-solid' : 'btn-ghost');
+            btn.style.padding = '6px 14px'; btn.style.fontSize = '13px';
+            btn.textContent = i;
+            btn.onclick = () => loadAdminUsers(i, document.getElementById('admin-search').value);
+            pag.appendChild(btn);
+        }
+    } catch (e) { showToast(e.message); }
+}
+
+async function adminUpdatePlan(userId, plan) {
+    try {
+        await apiFetch('/admin?action=user&id=' + userId, { method: 'PATCH', body: JSON.stringify({ plan }) });
+        showToast('Plan updated to ' + plan);
+    } catch (e) { showToast(e.message); }
+}
+
+async function adminDeleteUser(userId, btn) {
+    if (!confirm('Permanently delete this user and all their data?')) return;
+    btn.textContent = '…'; btn.disabled = true;
+    try {
+        await apiFetch('/admin?action=user&id=' + userId, { method: 'DELETE' });
+        loadAdminUsers(adminPage); loadAdminStats();
+        showToast('User deleted.');
+    } catch (e) { showToast(e.message); btn.textContent = 'Delete'; btn.disabled = false; }
+}
+
+let adminSearchTimeout;
+function adminSearch(val) {
+    clearTimeout(adminSearchTimeout);
+    adminSearchTimeout = setTimeout(() => loadAdminUsers(1, val), 350);
+}
+
+/* ══════════════════════════════════════════════
+   ARIA CHAT (MULTIPLE CONVERSATIONS PERSISTED IN LOCALSTORAGE)
+   and mobile drawer collapsible logic
+══════════════════════════════════════════════ */
+function loadConversations() {
+    try {
+        const raw = safeStorage.getItem('aria_conversations');
+        return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+        return {};
+    }
+}
+
+function saveConversations(convs) {
+    try {
+        safeStorage.setItem('aria_conversations', JSON.stringify(convs));
+    } catch (e) {}
+}
+
+// Premium, personalized welcome hero shown whenever a chat is empty —
+// greets the signed-in user by name and offers 3 suggested starting points.
+function getAriaWelcomeHTML() {
+    const firstName = (currentUser && currentUser.full_name) ? currentUser.full_name.split(' ')[0] : 'there';
+
+    return `
+    <div id="aria-welcome" class="aria-hero">
+        <div class="aria-hero-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--db-accent)" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h1 class="aria-hero-title">Welcome back, ${escapeHtml(firstName)}</h1>
+        <p class="aria-hero-sub">Where should we start today?</p>
+    </div>`;
+}
+
+function createConversation() {
+    const id = 'conv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    const convs = loadConversations();
+    const newConv = {
+        id: id,
+        title: 'New Chat',
+        messages: [],
+        created_at: Date.now(),
+        updated_at: Date.now()
+    };
+    convs[id] = newConv;
+    saveConversations(convs);
+    safeStorage.setItem('aria_active_id', id);
+    
+    const body = document.getElementById('ariaBody');
+    if (body) {
+        body.innerHTML = getAriaWelcomeHTML();
+    }
+    
+    return newConv;
+}
+
+function newAriaChat() {
+    createConversation();
+}
+
+function loadConversation(id) {
+    const convs = loadConversations();
+    const conv = convs[id];
+    if (!conv) return;
+    
+    safeStorage.setItem('aria_active_id', id);
+    
+    const body = document.getElementById('ariaBody');
+    if (!body) return;
+    body.innerHTML = '';
+    
+    if (conv.messages.length === 0) {
+        body.innerHTML = getAriaWelcomeHTML();
+    } else {
+        conv.messages.forEach(msg => {
+            const div = document.createElement('div');
+            div.className = msg.role === 'user' ? 'aria-msg-user' : 'aria-msg-bot';
+            if (msg.role === 'user') {
+                div.textContent = msg.content;
+            } else {
+                div.innerHTML = msg.content;
+            }
+            body.appendChild(div);
+        });
+    }
+    body.scrollTop = body.scrollHeight;
+}
+
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+}
+
+async function sendAriaMessage(presetText) {
+    const input = document.getElementById('ariaInput');
+    const text = presetText || (input ? input.value.trim() : '');
+    if (!text) return;
+
+    let activeId = safeStorage.getItem('aria_active_id');
+    let convs = loadConversations();
+    let conv = convs[activeId];
+    if (!conv) {
+        conv = createConversation();
+        activeId = conv.id;
+        convs = loadConversations();
+        conv = convs[activeId];
+    }
+
+    // Hide welcome screen
+    const welcome = document.getElementById('aria-welcome');
+    if (welcome) welcome.remove();
+
+    if (input) { input.value = ''; input.style.height = 'auto'; }
+
+    const body = document.getElementById('ariaBody');
+    const btn = document.getElementById('ariaSendBtn');
+    if (btn) btn.disabled = true;
+
+    // Append user message
+    const userDiv = document.createElement('div');
+    userDiv.className = 'aria-msg-user';
+    userDiv.textContent = text;
+    body.appendChild(userDiv);
+
+    // Typing indicator
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'aria-typing';
+    typingDiv.id = 'aria-typing';
+    typingDiv.innerHTML = '<span></span><span></span><span></span>';
+    body.appendChild(typingDiv);
+    body.scrollTop = body.scrollHeight;
+
+    conv.messages.push({ role: 'user', content: text });
+    
+    // Auto title on first message
+    if (conv.messages.length === 1 || conv.title === 'New Chat') {
+        let title = text;
+        if (title.length > 30) {
+            title = title.substring(0, 27) + '...';
+        }
+        conv.title = title;
+    }
+    conv.updated_at = Date.now();
+    convs[activeId] = conv;
+    saveConversations(convs);
+
+    try {
+        const data = await apiFetch('/chat', {
+            method: 'POST',
+            body: JSON.stringify({ messages: conv.messages })
+        });
+        typingDiv.remove();
+        const botDiv = document.createElement('div');
+        botDiv.className = 'aria-msg-bot';
+        botDiv.innerHTML = data.reply;
+        body.appendChild(botDiv);
+        
+        conv.messages.push({ role: 'assistant', content: data.reply });
+        conv.updated_at = Date.now();
+        convs[activeId] = conv;
+        saveConversations(convs);
+    } catch (e) {
+        typingDiv.remove();
+        const fallback = getFallbackResponse(text.toLowerCase());
+        const botDiv = document.createElement('div');
+        botDiv.className = 'aria-msg-bot';
+        botDiv.innerHTML = fallback;
+        body.appendChild(botDiv);
+        
+        conv.messages.push({ role: 'assistant', content: fallback });
+        conv.updated_at = Date.now();
+        convs[activeId] = conv;
+        saveConversations(convs);
+    }
+
+    if (btn) btn.disabled = false;
+    body.scrollTop = body.scrollHeight;
+}
+
+function getFallbackResponse(q) {
+    if (q.includes('carbon')||q.includes('tax')||q.includes('emission')) return '<strong>Carbon Tax:</strong> Applies to industrial facilities with emissions ≥25,000 tCO2e/year. Rising to $45/tonne in 2026-27. Register with NEA.';
+    if (q.includes('water')||q.includes('wemp')) return '<strong>WEMP:</strong> Applies to premises consuming ≥60,000 m³ annually. Appoint a Water Efficiency Manager and submit records to PUB.';
+    if (q.includes('energy')||q.includes('tj')) return '<strong>Energy Management:</strong> ≥54 TJ/year triggers mandatory certified Energy Manager appointment and annual NEA reporting.';
+    if (q.includes('deadline')||q.includes('when')) return '<strong>Key Deadlines:</strong><br>• Apr 1, 2026 — Beverage Container Return Scheme<br>• FY2026-27 — Carbon Tax rises to $45/tonne<br>• FY2027 — Non-listed company climate reporting';
+    return 'Great question! For precise guidance, book a <a href="index.html#bookCallModal" style="color:var(--teal-dark);font-weight:700;">Discovery Call</a> with our experts.';
+}
+
+/* ══════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════ */
+function showToast(msg) {
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    const t = document.createElement('div');
+    t.className = 'toast'; t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+}
+
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
+renderQuestions();
+boot();
+
+
+</script>
+<script>
+// ═══════════════════════════════════════════════
+// CARBON CALCULATOR — Tab switching
+// ═══════════════════════════════════════════════
+function switchCalcTab(tab) {
+  ['guided', 'paste', 'pdf'].forEach(t => {
+    document.getElementById('calc-tab-' + t).classList.toggle('active', t === tab);
+    document.getElementById('calc-panel-' + t).style.display = (t === tab) ? 'block' : 'none';
+  });
+  document.getElementById('calc-model-selector').style.display = (tab === 'guided') ? 'none' : 'block';
+  document.getElementById('calc-results').style.display = 'none';
+  document.getElementById('calc-error').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════
+// GUIDED QUESTIONS — Step navigation
+// ═══════════════════════════════════════════════
+let guidedCurrentStep = 1;
+const guidedTotalSteps = 8;
+
+function guidedGoNext() {
+  if (guidedCurrentStep < guidedTotalSteps) {
+    document.querySelector(`.guided-step[data-step="${guidedCurrentStep}"]`).classList.remove('active');
+    guidedCurrentStep++;
+    document.querySelector(`.guided-step[data-step="${guidedCurrentStep}"]`).classList.add('active');
+    updateGuidedProgress();
+    document.getElementById('guided-back-btn').style.visibility = 'visible';
+    if (guidedCurrentStep === guidedTotalSteps) {
+      document.getElementById('guided-next-btn').textContent = 'Calculate →';
+      buildGuidedSummaryPreview();
+    }
+  } else {
+    calculateFromGuided();
+  }
+}
+
+function guidedGoBack() {
+  if (guidedCurrentStep > 1) {
+    document.querySelector(`.guided-step[data-step="${guidedCurrentStep}"]`).classList.remove('active');
+    guidedCurrentStep--;
+    document.querySelector(`.guided-step[data-step="${guidedCurrentStep}"]`).classList.add('active');
+    updateGuidedProgress();
+    document.getElementById('guided-back-btn').style.visibility = (guidedCurrentStep === 1) ? 'hidden' : 'visible';
+    document.getElementById('guided-next-btn').textContent = 'Next →';
+  }
+}
+
+function updateGuidedProgress() {
+  const pct = Math.round((guidedCurrentStep / guidedTotalSteps) * 100);
+  document.getElementById('guided-step-label').textContent = `Step ${guidedCurrentStep} of ${guidedTotalSteps}`;
+  document.getElementById('guided-percent').textContent = pct + '%';
+  document.getElementById('guided-progress-bar').style.width = pct + '%';
+}
+
+function buildGuidedSummaryPreview() {
+  const country = document.getElementById('gq-country').value || 'Not specified';
+  const elec = document.getElementById('gq-electricity-kwh').value || '0';
+  const fuel = document.getElementById('gq-fuel-type').value || 'None';
+  const fuelQty = document.getElementById('gq-fuel-quantity').value || '';
+  document.getElementById('guided-summary-preview').innerHTML = `
+    <strong>Country:</strong> ${country}<br>
+    <strong>Electricity:</strong> ${elec} kWh<br>
+    <strong>Fuel:</strong> ${fuel} ${fuelQty}
+  `;
+}
+
+function calculateFromGuided() {
+  const payload = {
+    country: document.getElementById('gq-country').value,
+    electricity_kwh: document.getElementById('gq-electricity-kwh').value,
+    fuel_type: document.getElementById('gq-fuel-type').value,
+    fuel_quantity: document.getElementById('gq-fuel-quantity').value
+  };
+  runCalculation(payload);
+}
+
+// ═══════════════════════════════════════════════
+// PASTE TEXT — AI extraction then calculate
+// ═══════════════════════════════════════════════
+async function analyseCalcText() {
+  const text = document.getElementById('calc-paste-input').value.trim();
+  if (!text || text.length < 20) {
+    alert('Please paste some document text first.');
+    return;
+  }
+  const model = document.getElementById('calc-model-select').value;
+  showCalcLoading(true);
+  try {
+    const res = await fetch('/api/scope3text', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, model })
+    });
+    const data = await res.json();
+    showCalcLoading(false);
+    if (!res.ok || data.error) {
+      showCalcError(data.error || 'Something went wrong.');
+      return;
+    }
+    if (data.extracted) {
+      runCalculation({
+        country: data.extracted.country,
+        electricity_kwh: data.extracted.electricity_kwh,
+        fuel_type: data.extracted.fuel_type,
+        fuel_quantity: data.extracted.fuel_quantity
+      }, data.extracted);
+    }
+  } catch (err) {
+    showCalcLoading(false);
+    showCalcError('Network error: ' + err.message);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// PDF UPLOAD — file handling + AI extraction
+// ═══════════════════════════════════════════════
+let calcPDFFile = null;
+
+function handleCalcFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  calcPDFFile = file;
+  document.getElementById('calc-file-info').style.display = 'block';
+  document.getElementById('calc-file-info').textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(0)} KB)`;
+  document.getElementById('calc-pdf-btn').style.display = 'inline-block';
+}
+
+async function analyseCalcPDF() {
+  if (!calcPDFFile) {
+    alert('Please select a PDF first.');
+    return;
+  }
+  const model = document.getElementById('calc-model-select').value;
+  showCalcLoading(true);
+  try {
+    const base64 = await fileToBase64(calcPDFFile);
+    const res = await fetch('/api/scope3', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fileData: base64,
+        mimeType: calcPDFFile.type,
+        fileName: calcPDFFile.name,
+        model
+      })
+    });
+    const data = await res.json();
+    showCalcLoading(false);
+    if (!res.ok || data.error) {
+      showCalcError(data.error || 'Could not extract data from this PDF.');
+      return;
+    }
+    if (data.extracted) {
+      runCalculation({
+        country: data.extracted.country,
+        electricity_kwh: data.extracted.electricity_kwh,
+        fuel_type: data.extracted.fuel_type,
+        fuel_quantity: data.extracted.fuel_quantity
+      }, data.extracted);
+    }
+  } catch (err) {
+    showCalcLoading(false);
+    showCalcError('Network error: ' + err.message);
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// SHARED: Run calculation + render results
+// ═══════════════════════════════════════════════
+function showCalcLoading(show) {
+  document.getElementById('calc-loading').style.display = show ? 'block' : 'none';
+  document.getElementById('calc-error').style.display = 'none';
+  document.getElementById('calc-results').style.display = 'none';
+}
+
+function showCalcError(msg) {
+  document.getElementById('calc-error').textContent = msg;
+  document.getElementById('calc-error').style.display = 'block';
+}
+
+async function runCalculation(payload, extractedData) {
+  showCalcLoading(true);
+  try {
+    const res = await fetch('/api/calculate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const calc = await res.json();
+    showCalcLoading(false);
+    if (calc.error) {
+      showCalcError(calc.error);
+      return;
+    }
+    renderCalcResults(calc, extractedData);
+  } catch (err) {
+    showCalcLoading(false);
+    showCalcError('Calculation failed: ' + err.message);
+  }
+}
+
+function renderCalcResults(calc, extractedData) {
+  let extractedHTML = '';
+  if (extractedData) {
+    extractedHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:20px;">';
+    Object.entries(extractedData).forEach(([key, value]) => {
+      if (value && value !== 'null') {
+        extractedHTML += `<div style="background:var(--db-surface);border:1px solid var(--db-border);border-radius:8px;padding:12px 14px;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.05em;color:var(--db-ink-muted);margin-bottom:3px;">${key.replace(/_/g,' ')}</div>
+          <div style="font-size:14px;font-weight:600;color:var(--db-ink);">${value}</div>
+        </div>`;
+      }
+    });
+    extractedHTML += '</div>';
+  }
+
+  let html = extractedHTML + `
+    <div style="padding:20px 24px;background:var(--db-surface);border:1px solid var(--db-border);border-radius:12px;">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--db-ink-muted);margin-bottom:16px;font-weight:600;">Carbon Calculation Results</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
+        <div style="flex:1;min-width:140px;background:#f0f7ef;border:1px solid #c8dfc5;border-radius:8px;padding:16px;">
+          <div style="font-size:11px;color:#4a7c59;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Total Emissions</div>
+          <div style="font-size:28px;font-weight:700;color:#2d5a3d;">${calc.total_tco2e}</div>
+          <div style="font-size:12px;color:#4a7c59;margin-top:2px;">tCO₂e</div>
+        </div>`;
+
+  if (calc.scope2) {
+    html += `
+        <div style="flex:1;min-width:140px;background:var(--db-surface);border:1px solid var(--db-border);border-radius:8px;padding:16px;">
+          <div style="font-size:11px;color:var(--db-ink-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Scope 2 — Electricity</div>
+          <div style="font-size:22px;font-weight:600;color:var(--db-ink);">${calc.scope2.tco2e}</div>
+          <div style="font-size:12px;color:var(--db-ink-muted);margin-top:2px;">tCO₂e · ${calc.scope2.kwh.toLocaleString()} kWh</div>
+        </div>`;
+  }
+
+  if (calc.scope1) {
+    html += `
+        <div style="flex:1;min-width:140px;background:var(--db-surface);border:1px solid var(--db-border);border-radius:8px;padding:16px;">
+          <div style="font-size:11px;color:var(--db-ink-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Scope 1 — ${calc.scope1.fuel_type}</div>
+          <div style="font-size:22px;font-weight:600;color:var(--db-ink);">${calc.scope1.tco2e}</div>
+          <div style="font-size:12px;color:var(--db-ink-muted);margin-top:2px;">tCO₂e · ${calc.scope1.quantity.toLocaleString()} ${calc.scope1.unit}</div>
+        </div>`;
+  }
+
+  html += `</div>`;
+
+  if (calc.methodology && calc.methodology.length > 0) {
+    html += `
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--db-ink-muted);margin-bottom:8px;font-weight:600;">Methodology</div>
+      <div style="font-size:12px;color:var(--db-ink-muted);line-height:1.8;">`;
+    calc.methodology.forEach(m => {
+      html += `<div style="padding:4px 0;border-bottom:1px solid var(--db-border);">• ${m}</div>`;
+    });
+    html += `</div>`;
+  }
+
+  if (calc.warnings && calc.warnings.length > 0) {
+    html += `
+      <div style="margin-top:12px;padding:10px 14px;background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;font-size:12px;color:#92400e;">
+        ⚠️ ${calc.warnings.join(' ')}
+      </div>`;
+  }
+
+  html += `</div>`;
+
+  const resultsDiv = document.getElementById('calc-results');
+  resultsDiv.innerHTML = html;
+  resultsDiv.style.display = 'block';
+}
+</script>
+</body>
+</html>
