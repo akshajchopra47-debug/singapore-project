@@ -106,9 +106,10 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
 .topbar-left h2{font-family:var(--display);font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-0.01em}
 .topbar-left p{font-size:11px;color:var(--ink-muted);margin-top:1px}
 .topbar-right{display:flex;align-items:center;gap:12px}
-.topbar-search{display:flex;align-items:center;gap:8px;background:var(--surface-low);border:1px solid var(--line-mid);border-radius:20px;padding:5px 14px;transition:border-color .15s ease}
+.topbar-search{display:flex;align-items:center;gap:8px;background:var(--surface-low);border:1px solid var(--line-mid);border-radius:20px;padding:5px 14px;transition:border-color .15s ease;position:relative;}
 .topbar-search:focus-within{border-color:var(--moss-deep);background:var(--surface)}
 .topbar-search input{background:transparent;border:none;outline:none;font-size:12.5px;color:var(--ink);width:170px}
+.search-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;width:340px;background:var(--surface);border:1px solid var(--line-mid);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,0.12);z-index:1000;max-height:380px;overflow-y:auto;padding:6px 0;}
 .pill-tag{font-family:var(--mono);font-size:10.5px;font-weight:600;padding:5px 10px;background:var(--surface-sunken);color:var(--ink-mid);border-radius:20px;text-transform:uppercase;letter-spacing:.03em}
 
 .page-body{flex:1;overflow-y:auto;padding:36px 40px}
@@ -339,7 +340,8 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
     <div class="topbar-right">
       <div class="topbar-search">
         <span class="material-symbols-outlined" style="font-size:16px;color:var(--ink-muted);">search</span>
-        <input type="text" placeholder="Search insights..." id="topbar-search-input">
+        <input type="text" placeholder="Search insights..." id="topbar-search-input" oninput="handleSearch(this.value)" onfocus="handleSearch(this.value)">
+        <div class="search-dropdown" id="search-dropdown"></div>
       </div>
       <span class="pill-tag">SG Compliance</span>
       <span class="pill-tag" id="date-tag">—</span>
@@ -431,8 +433,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
               <p style="font-size:13px;color:var(--ink-mid);line-height:1.6;">Singapore companies with &gt;S$10M turnover have mandatory packaging reporting — make sure your data collection systems are ready for the next NEA cycle.</p>
             </div>
           </div>
-          <div style="padding:14px 22px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;">
-            <span style="font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-muted);">Powered by Claude</span>
+          <div style="padding:14px 22px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:flex-end;">
             <a href="#" onclick="showView('aria');return false;" style="font-size:12px;font-weight:600;color:var(--moss-deep);text-decoration:none;">Open AI Advisor →</a>
           </div>
         </div>
@@ -525,7 +526,6 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
       <div class="panel" id="ai-insight-panel">
         <div class="panel-head">
           <h3>AI Insight Summary</h3>
-          <span class="pill-tag">Powered by Claude</span>
         </div>
         <div class="panel-body" id="ai-insight-body" style="font-size:14px;line-height:1.7;color:var(--ink-mid);">
           <em style="color:var(--ink-muted);">Generating personalised analysis…</em>
@@ -665,7 +665,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
       </div>
     </div>
 
-    <!-- ══ CARBON CALCULATOR (REDESIGNED) ══ -->
+    <!-- ══ CARBON CALCULATOR ══ -->
     <div class="view" id="view-calculator">
       <div class="view-eyebrow">ESG Engine</div>
       <h1 class="view-title">Carbon Calculator</h1>
@@ -678,13 +678,13 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
             <p style="font-size:12px;color:var(--ink-muted);">Choose how you prefer to feed data into the carbon accounting model</p>
           </div>
           <div style="display:flex;gap:8px;">
-            <button id="calc-tab-guided" class="calc-tab-btn active" onclick="switchCalcTab('guided')">🧭 Guided Wizard</button>
-            <button id="calc-tab-paste" class="calc-tab-btn" onclick="switchCalcTab('paste')">📋 Paste Raw Text</button>
-            <button id="calc-tab-pdf" class="calc-tab-btn" onclick="switchCalcTab('pdf')">📄 Upload PDF Invoice</button>
+            <button id="calc-tab-guided" class="calc-tab-btn active" onclick="switchCalcTab('guided')">Guided Questions</button>
+            <button id="calc-tab-paste" class="calc-tab-btn" onclick="switchCalcTab('paste')">Paste Raw Text</button>
+            <button id="calc-tab-pdf" class="calc-tab-btn" onclick="switchCalcTab('pdf')">Upload PDF Invoice</button>
           </div>
         </div>
 
-        <!-- Guided Wizard View -->
+        <!-- Guided Questions View -->
         <div id="calc-panel-guided" class="calc-panel" style="padding:28px;">
           <div style="margin-bottom:28px;">
             <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-muted);margin-bottom:8px;font-family:var(--mono);">
@@ -792,7 +792,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
       <div id="calc-results" style="display:none;"></div>
     </div>
 
-    <!-- ══ REDESIGNED ASK AI ADVISOR (CLAUDE-STYLE) ══ -->
+    <!-- ══ ASK AI ADVISOR ══ -->
     <div class="view" id="view-aria" style="min-height:0;">
       <div class="claude-container">
         <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:16px;">
@@ -887,6 +887,70 @@ const safeStorage = {
 
 let currentUser = null;
 let authToken = safeStorage.getItem('tca_token') || null;
+
+/* ── SEARCH INSIGHTS INDEX & HANDLER ── */
+const searchIndex = [
+  { type: 'Navigation', name: 'Dashboard Overview', view: 'overview', desc: 'Main compliance dashboard & metrics' },
+  { type: 'Navigation', name: 'ESG Gap Analysis', view: 'assessment', desc: 'Audit against 7 SG regulations' },
+  { type: 'Navigation', name: 'Action Roadmap', view: 'roadmap', desc: '90-day structured compliance plan' },
+  { type: 'Navigation', name: 'Resource Hub', view: 'resources', desc: 'Official guides & regulatory links' },
+  { type: 'Navigation', name: 'Carbon Calculator', view: 'calculator', desc: 'Calculate Scope 1 & Scope 2 emissions' },
+  { type: 'Navigation', name: 'My Reports', view: 'reports', desc: 'Saved audit history & analytics' },
+  { type: 'Navigation', name: 'Account Settings', view: 'settings', desc: 'Company profile, email, plan settings' },
+  { type: 'Regulation', name: 'Carbon Tax (CPA)', view: 'assessment', desc: 'Facilities emitting ≥25,000 tCO2e/yr ($45/tonne from 2026)' },
+  { type: 'Regulation', name: 'Mandatory Energy Management', view: 'assessment', desc: 'Companies consuming ≥54 TJ energy annually' },
+  { type: 'Regulation', name: 'Water Efficiency (WEMP)', view: 'assessment', desc: 'Premises consuming ≥60,000 m³ water annually' },
+  { type: 'Regulation', name: 'Mandatory Packaging Reporting', view: 'assessment', desc: 'Turnover >S$10M supplying packaged goods' },
+  { type: 'Regulation', name: 'Food Waste Segregation', view: 'assessment', desc: 'Industrial & commercial food waste treatment' },
+  { type: 'Regulation', name: 'Climate Reporting (Non-listed)', view: 'assessment', desc: 'ISSB standards for Revenue ≥S$1B' },
+  { type: 'Resource', name: 'NEA Energy Guidelines', view: 'resources', desc: 'Official NEA industrial energy management' },
+  { type: 'Resource', name: 'PUB Water Efficiency', view: 'resources', desc: 'PUB WEMP guidelines & submetering' },
+  { type: 'Resource', name: 'SGX ESG Framework', view: 'resources', desc: 'Mandatory listed company disclosures' }
+];
+
+function handleSearch(query) {
+  const dropdown = document.getElementById('search-dropdown');
+  if (!dropdown) return;
+  const q = query.trim().toLowerCase();
+  if (!q) { dropdown.style.display = 'none'; return; }
+  
+  const results = searchIndex.filter(item => 
+    item.name.toLowerCase().includes(q) || 
+    item.desc.toLowerCase().includes(q) || 
+    item.type.toLowerCase().includes(q)
+  );
+
+  if (results.length === 0) {
+    dropdown.innerHTML = `<div style="padding:14px 16px;font-size:12.5px;color:var(--ink-muted);text-align:center;">No matching insights found</div>`;
+  } else {
+    dropdown.innerHTML = results.map(r => `
+      <div onclick="selectSearchResult('${r.view}')" style="padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--line);transition:background .15s;" onmouseover="this.style.background='var(--surface-low)'" onmouseout="this.style.background='transparent'">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+          <span style="font-weight:600;font-size:13px;color:var(--ink);">${escapeHtml(r.name)}</span>
+          <span style="font-family:var(--mono);font-size:9.5px;text-transform:uppercase;background:var(--surface-sunken);padding:2px 6px;border-radius:4px;color:var(--ink-muted);">${r.type}</span>
+        </div>
+        <div style="font-size:11.5px;color:var(--ink-muted);">${escapeHtml(r.desc)}</div>
+      </div>
+    `).join('');
+  }
+  dropdown.style.display = 'block';
+}
+
+function selectSearchResult(viewName) {
+  showView(viewName);
+  const dropdown = document.getElementById('search-dropdown');
+  if (dropdown) dropdown.style.display = 'none';
+  const input = document.getElementById('topbar-search-input');
+  if (input) input.value = '';
+}
+
+document.addEventListener('click', (e) => {
+  const searchWrap = document.querySelector('.topbar-search');
+  const dropdown = document.getElementById('search-dropdown');
+  if (dropdown && searchWrap && !searchWrap.contains(e.target)) {
+    dropdown.style.display = 'none';
+  }
+});
 
 async function apiFetch(path, opts = {}) {
     const url = new URL('http://localhost' + path);
