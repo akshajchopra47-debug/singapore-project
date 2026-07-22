@@ -245,6 +245,13 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
 @keyframes ariaDot{0%,80%,100%{transform:scale(.7);opacity:.4}40%{transform:scale(1);opacity:1}}
 .aria-chip{font-size:12.5px;font-weight:500;color:var(--ink-mid);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:7px 14px;cursor:pointer;white-space:nowrap;transition:all .18s ease}
 .aria-chip:hover{background:var(--moss-tint);border-color:var(--moss-border);color:var(--moss-deep)}
+.chat-level-picker{position:relative;display:inline-block}
+.chat-level-btn{display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:500;color:var(--ink-mid);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:7px 12px;cursor:pointer;transition:all .18s ease}
+.chat-level-btn:hover{background:var(--moss-tint);border-color:var(--moss-border);color:var(--moss-deep)}
+.chat-level-menu{display:none;position:absolute;bottom:calc(100% + 6px);left:0;min-width:110px;background:var(--surface);border:1px solid var(--line-mid);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,0.1);z-index:200;padding:6px;}
+.chat-level-menu.open{display:block}
+.chat-level-option{display:block;width:100%;padding:7px 10px;border:none;background:transparent;border-radius:7px;font-size:12.5px;color:var(--ink);cursor:pointer;text-align:left}
+.chat-level-option:hover{background:var(--surface-low)}
 @keyframes ariaPulse{0%,100%{opacity:1}50%{opacity:.4}}
 
 /* ── CALCULATOR REDESIGN ──────────────── */
@@ -702,8 +709,8 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
                   <button type="button" class="model-picker-option" data-model="nemotron-3" data-logo="/img/logo-nvidia.png" onclick="selectCalcModel(this)">
                     <img src="/img/logo-nvidia.png" alt=""> <span>Nemotron 3</span>
                   </button>
-                  <button type="button" class="model-picker-option" data-model="laguna-xs" data-logo="/img/logo-openrouter.png" onclick="selectCalcModel(this)">
-                    <img src="/img/logo-openrouter.png" alt=""> <span>Laguna XS</span>
+                  <button type="button" class="model-picker-option" data-model="laguna-xs" data-logo="/img/logo-poolside.png" onclick="selectCalcModel(this)">
+                    <img src="/img/logo-poolside.png" alt=""> <span>Laguna XS</span>
                   </button>
                   <button type="button" class="model-picker-option" data-model="gemma-31b" data-logo="/img/logo-openrouter.png" onclick="selectCalcModel(this)">
                     <img src="/img/logo-openrouter.png" alt=""> <span>Gemma 3 31B</span>
@@ -846,7 +853,19 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
           <div class="claude-chat-card">
             <textarea id="ariaInput" rows="2" placeholder="Ask about SGX climate disclosures, Carbon Tax, NEA, or PUB compliance..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAriaMessage();}" style="width:100%;background:transparent;border:none;outline:none;font-size:14px;color:var(--ink);resize:none;line-height:1.5;"></textarea>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
-              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                <div class="chat-level-picker" id="aria-level-picker">
+                  <button type="button" class="chat-level-btn" id="aria-level-btn" onclick="toggleAriaLevelPicker()">
+                    <span id="aria-level-label">Low</span>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="chat-level-menu" id="aria-level-menu">
+                    <button type="button" class="chat-level-option" data-model="gemini-3" onclick="selectAriaLevel(this)">Low</button>
+                    <button type="button" class="chat-level-option" data-model="laguna-xs" onclick="selectAriaLevel(this)">Medium</button>
+                    <button type="button" class="chat-level-option" data-model="gemma-31b" onclick="selectAriaLevel(this)">High</button>
+                    <button type="button" class="chat-level-option" data-model="nemotron-3" onclick="selectAriaLevel(this)">Hard</button>
+                  </div>
+                </div>
                 <button class="aria-chip" onclick="sendAriaMessage('What are my upcoming compliance deadlines?')">Upcoming deadlines</button>
                 <button class="aria-chip" onclick="showView('calculator')">Carbon Calculator</button>
                 <button class="aria-chip" onclick="showView('assessment')">ESG Gap Diagnostic</button>
@@ -1436,7 +1455,7 @@ async function sendAriaMessage(presetText) {
     conv.messages.push({ role: 'user', content: text });
     
     try {
-        const data = await apiFetch('/chat', { method: 'POST', body: JSON.stringify({ messages: conv.messages }) });
+        const data = await apiFetch('/chat', { method: 'POST', body: JSON.stringify({ messages: conv.messages, model: getAriaLevelModel() }) });
         typingDiv.remove();
         const botDiv = document.createElement('div'); botDiv.className = 'aria-msg-bot'; botDiv.innerHTML = data.reply; body.appendChild(botDiv);
         conv.messages.push({ role: 'assistant', content: data.reply }); convs[activeId] = conv; saveConversations(convs);
@@ -1523,6 +1542,29 @@ document.addEventListener('click', function (e) {
   const picker = document.getElementById('calc-model-picker');
   if (picker && !picker.contains(e.target)) {
     document.getElementById('calc-model-menu').classList.remove('open');
+  }
+});
+
+let selectedAriaModel = 'gemini-3';
+
+function getAriaLevelModel() {
+  return selectedAriaModel;
+}
+
+function toggleAriaLevelPicker() {
+  document.getElementById('aria-level-menu').classList.toggle('open');
+}
+
+function selectAriaLevel(el) {
+  selectedAriaModel = el.getAttribute('data-model');
+  document.getElementById('aria-level-label').textContent = el.textContent;
+  document.getElementById('aria-level-menu').classList.remove('open');
+}
+
+document.addEventListener('click', function (e) {
+  const picker = document.getElementById('aria-level-picker');
+  if (picker && !picker.contains(e.target)) {
+    document.getElementById('aria-level-menu').classList.remove('open');
   }
 });
 
