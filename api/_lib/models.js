@@ -3,8 +3,8 @@
 // which provider/API each one is routed through, and the real model id
 // sent to that provider.
 //
-// gemini + nemotron -> Google Gemini API (GEMINI_API_KEY)
-// gemma  + laguna    -> OpenRouter        (OPENROUTER_API_KEY)
+// gemini            -> Google Gemini API (GEMINI_API_KEY)
+// nemotron, laguna, gemma -> OpenRouter (OPENROUTER_API_KEY)
 
 const MODELS = {
   'gemini-3': {
@@ -15,17 +15,15 @@ const MODELS = {
   },
   'nemotron-3': {
     label: 'Nemotron 3 Embed 1B',
-    provider: 'gemini',
-    model: 'gemini-2.5-flash', // NVIDIA Nemotron 3 is served through the Gemini
-                                // endpoint here since only GEMINI_API_KEY is
-                                // configured for this provider slot.
+    provider: 'openrouter',
+    model: 'nvidia/nemotron-3-nano-30b-a3b:free',
     logo: '/img/logo-nvidia.png'
   },
   'laguna-xs': {
     label: 'Laguna XS',
     provider: 'openrouter',
     model: 'poolside/laguna-xs-2.1:free',
-    logo: '/img/logo-openrouter.png'
+    logo: '/img/logo-poolside.png'
   },
   'gemma-31b': {
     label: 'Gemma 3 31B',
