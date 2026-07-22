@@ -30,7 +30,6 @@
                 </div>
             </li>
 
-            
             <li>
                 <button class="nav-parent">Resources <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
                 <div class="nav-dropdown">
@@ -62,11 +61,11 @@
     </div>
 </nav>
 
-<main class="pricing-main">
-  <div class="pricing-header">
+<div class="page-header">
     <h1>Transparent Pricing</h1>
     <p>Choose the plan that fits your sustainability journey</p>
-  </div>
+</div>
+<main class="container" style="padding-top:64px;padding-bottom:120px;">
   <div class="pricing-grid">
 
     <div class="pricing-card">
@@ -87,7 +86,7 @@
       <ul>
         <li>Advanced ESG reporting (GRI)</li>
         <li>Quarterly strategy calls</li>
-        <li>Compliance checklist (SGX / Carbon Tax)</li>
+        <li>Compliance checklist (SGX)</li>
       </ul>
       <button class="btn btn-primary" onclick="openModal('bookCall')">Start Free Trial</button>
     </div>
@@ -106,6 +105,20 @@
   </div>
 </main>
 
+<footer>
+    <div class="footer-content">
+        <div>
+            <a href="index.html" class="footer-logo"><img src="logo.png?v=4.2" alt="The Climate Architects"></a>
+            <p class="footer-tagline">Helping Singapore SMEs transition to sustainability. Without enterprise consulting costs.</p>
+        </div>
+        <div class="footer-section">
+            <h3>Singapore</h3>
+            <ul class="footer-links">
+                <li><a href="audit.html">ESG Audit</a></li>
+                <li><a href="frameworks.html">Frameworks</a></li>
+                <li><a href="protection.html">Greenwashing Protection</a></li>
+            </ul>
+        </div>
         <div class="footer-section">
             <h3>Platform</h3>
             <ul class="footer-links">
@@ -117,7 +130,8 @@
     <div class="footer-bottom">
         <span>&copy; 2026 The Climate Architects. All rights reserved.</span>
         <span style="display:flex;gap:24px;align-items:center;">
-            <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;">🇸🇬</span> Singapore</span>        </span>
+            <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;">🇸🇬</span> Singapore</span>
+        </span>
     </div>
 </footer>
 <script src="js/main.js?v=3.1"></script>
@@ -144,7 +158,6 @@
     Greenwashing Protection
     <span class="dd-chip sg">SG</span>
   </a>
-
 
   <div class="mob-divider"></div>
 
@@ -226,7 +239,9 @@
         <label for="mc-topic">What would you like to discuss?</label>
         <select id="mc-topic" name="topic">
           <option value="">Select a topic</option>
+          <option value="scope3">Scope 3 Carbon Compliance</option>
           <option value="esg-audit">ESG Readiness Audit</option>
+          <option value="carbon-tax">Carbon Tax & Energy Compliance</option>
           <option value="greenwashing">Greenwashing Protection</option>
           <option value="general">General Enquiry</option>
         </select>
