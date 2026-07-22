@@ -26,9 +26,9 @@
                 </button>
                 <div class="nav-dropdown">
                     <div class="dropdown-section-label">Singapore Services</div>
-                    <a href="audit.html">ESG Readiness Audit <span class="dd-market sg">SG</span></a>
-                    <a href="frameworks.html">ESG Frameworks <span class="dd-market sg">SG</span></a>
-                    <a href="protection.html">Greenwashing Protection <span class="dd-market sg">SG</span></a>
+                    <a href="audit.html">ESG Readiness Audit</a>
+                    <a href="frameworks.html">ESG Frameworks</a>
+                    <a href="protection.html">Greenwashing Protection</a>
                 </div>
             </li>
 
@@ -89,7 +89,7 @@
         </div>
         <!-- Animated Radar Graphic -->
         <div class="hero-graphic" id="hero-graphic">
-            <div class="radar-wrapper">
+            <div class="radar-wrapper" style="position: relative;">
                 <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" class="radar-svg">
                     <!-- Concentric circles -->
                     <circle class="radar-circle-dashed outer" cx="200" cy="200" fill="none" r="150" stroke="currentColor" stroke-dasharray="4 4" stroke-width="1"></circle>
@@ -121,11 +121,11 @@
                     <circle cx="200" cy="200" fill="currentColor" r="8"></circle>
                 </svg>
                 
-                <!-- Absolute positioned HTML labels overlaying the glass panel -->
-                <span class="radar-label label-eca">ECA</span>
-                <span class="radar-label label-nea">NEA</span>
-                <span class="radar-label label-sgx">SGX</span>
-                <span class="radar-label label-tca">TCA</span>
+                <!-- Positioned Labels Around Circle -->
+                <span class="radar-label label-eca" style="position: absolute; top: 50%; left: 10%; transform: translateY(-50%);">ECA</span>
+                <span class="radar-label label-nea" style="position: absolute; top: 50%; right: 10%; transform: translateY(-50%);">NEA</span>
+                <span class="radar-label label-sgx" style="position: absolute; top: 10%; left: 50%; transform: translateX(-50%);">SGX</span>
+                <span class="radar-label label-tca" style="position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%);">TCA</span>
             </div>
         </div>
     </div>
@@ -281,27 +281,18 @@
                 <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
                 <h3>ESG Readiness Audit</h3>
                 <p>Establish baseline carbon, water, waste, and energy metrics. Identify your 3 highest-impact gaps across applicable regulations — in 48 hours.</p>
-                <div style="display:flex; gap:8px; margin-bottom: 28px;">
-                    <span class="badge-sg">SG</span>
-                </div>
                 <a href="audit.html" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:auto;">SG Audit</a>
             </div>
             <div class="value-card reveal delay-2">
                 <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
                 <h3>Greenwashing Protection</h3>
                 <p>Substantiate every environmental claim before regulators come knocking. Data verification, "Claim Safe" language templates, and monitoring alerts.</p>
-                <div style="display:flex; gap:8px; margin-bottom: 28px;">
-                    <span class="badge-sg">SG</span>
-                </div>
                 <a href="protection.html" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:auto;">View Protection Plan</a>
             </div>
             <div class="value-card reveal delay-3">
                 <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg></div>
                 <h3>ESG Frameworks</h3>
                 <p>Stop framework confusion. We match your business profile to the right standard — GRI, ISSB, SGX-aligned — and build the reporting structure.</p>
-                <div style="display:flex; gap:8px; margin-bottom: 28px;">
-                    <span class="badge-sg">SG</span>
-                </div>
                 <a href="frameworks.html" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:auto;">SG Frameworks</a>
             </div>
         </div>
@@ -564,15 +555,12 @@
   <span class="mob-section-title">Singapore</span>
   <a href="audit.html" class="mob-nav-link">
     ESG Readiness Audit
-    <span class="dd-chip sg">SG</span>
   </a>
   <a href="frameworks.html" class="mob-nav-link">
     ESG Frameworks
-    <span class="dd-chip sg">SG</span>
   </a>
   <a href="protection.html" class="mob-nav-link">
     Greenwashing Protection
-    <span class="dd-chip sg">SG</span>
   </a>
 
   <div class="mob-divider"></div>
@@ -655,7 +643,7 @@
         <label for="mc-topic">What would you like to discuss?</label>
         <select id="mc-topic" name="topic">
           <option value="">Select a topic</option>
-          <option value="scope3">Scope 3 Carbon Compliance</option>
+          <option value="carbon-compliance">Carbon Compliance</option>
           <option value="esg-audit">ESG Readiness Audit</option>
           <option value="carbon-tax">Carbon Tax & Energy Compliance</option>
           <option value="greenwashing">Greenwashing Protection</option>
