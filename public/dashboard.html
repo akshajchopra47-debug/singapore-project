@@ -677,7 +677,13 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
             <h3 style="font-family:var(--display);font-size:16px;font-weight:600;">Data Input Method</h3>
             <p style="font-size:12px;color:var(--ink-muted);">Choose how you prefer to feed data into the carbon accounting model</p>
           </div>
-          <div style="display:flex;gap:8px;">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <select id="calc-model-select" class="form-select" style="width:auto;padding:8px 12px;font-size:12.5px;">
+              <option value="gemini-3">Gemini 3 (Google)</option>
+              <option value="nemotron-3">Nemotron 3 (NVIDIA, via Gemini)</option>
+              <option value="laguna-xs" selected>Laguna XS (OpenRouter)</option>
+              <option value="gemma-31b">Gemma 3 31B (OpenRouter)</option>
+            </select>
             <button id="calc-tab-guided" class="calc-tab-btn active" onclick="switchCalcTab('guided')">Guided Questions</button>
             <button id="calc-tab-paste" class="calc-tab-btn" onclick="switchCalcTab('paste')">Paste Raw Text</button>
             <button id="calc-tab-pdf" class="calc-tab-btn" onclick="switchCalcTab('pdf')">Upload PDF Invoice</button>
@@ -1467,8 +1473,49 @@ function buildGuidedSummaryPreview() {
   const fuelQty = document.getElementById('gq-fuel-quantity').value || '0';
   document.getElementById('guided-summary-preview').innerHTML = `<strong>Country Jurisdiction:</strong> ${country}<br><strong>Electricity Usage:</strong> ${elec} kWh<br><strong>Fuel Combustion:</strong> ${fuel} (${fuelQty})`;
 }
+function getSelectedCalcModel() {
+  const sel = document.getElementById('calc-model-select');
+  return sel ? sel.value : 'laguna-xs';
+}
+
+function toCalcDisplay(calc) {
+  return {
+    total_tco2e: calc.total_tco2e,
+    scope2: calc.scope2 ? { tco2e: calc.scope2.tco2e, kwh: calc.scope2.kwh } : { tco2e: '0.00', kwh: 0 },
+    scope1: calc.scope1
+      ? { fuel_type: calc.scope1.fuel_type, tco2e: calc.scope1.tco2e, quantity: calc.scope1.quantity, unit: calc.scope1.unit }
+      : { fuel_type: 'None', tco2e: '0.00', quantity: 0, unit: '' }
+  };
+}
+
+function showCalcLoading(show) { document.getElementById('calc-loading').style.display = show ? 'block' : 'none'; document.getElementById('calc-error').style.display = 'none'; document.getElementById('calc-results').style.display = 'none'; }
+function showCalcError(msg) { document.getElementById('calc-error').textContent = msg; document.getElementById('calc-error').style.display = 'block'; }
+
+async function runCalculation(payload) {
+  showCalcLoading(true);
+  try {
+    const res = await fetch('/api/calculate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const calc = await res.json();
+    showCalcLoading(false);
+    if (!res.ok || calc.error) { showCalcError(calc.error || 'Calculation failed.'); return; }
+    renderCalcResults(toCalcDisplay(calc));
+  } catch (e) {
+    showCalcLoading(false);
+    showCalcError('Calculation failed: ' + e.message);
+  }
+}
+
 function calculateFromGuided() {
-  const payload = { country: document.getElementById('gq-country').value, electricity_kwh: document.getElementById('gq-electricity-kwh').value, fuel_type: document.getElementById('gq-fuel-type').value, fuel_quantity: document.getElementById('gq-fuel-quantity').value };
+  const payload = {
+    country: document.getElementById('gq-country').value,
+    electricity_kwh: document.getElementById('gq-electricity-kwh').value,
+    fuel_type: document.getElementById('gq-fuel-type').value,
+    fuel_quantity: document.getElementById('gq-fuel-quantity').value
+  };
   runCalculation(payload);
 }
 
@@ -1476,9 +1523,28 @@ async function analyseCalcText() {
   const text = document.getElementById('calc-paste-input').value.trim();
   if (!text || text.length < 15) { alert('Please paste valid billing or utility text first.'); return; }
   showCalcLoading(true);
-  setTimeout(() => {
-    runCalculation({ country: 'singapore', electricity_kwh: '18400', fuel_type: 'natural gas', fuel_quantity: '420' });
-  }, 600);
+  try {
+    const extractRes = await fetch('/api/extract-text', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, model: getSelectedCalcModel() })
+    });
+    const extractData = await extractRes.json();
+    if (!extractRes.ok || extractData.error) { showCalcLoading(false); showCalcError(extractData.error || 'Could not extract data from that text.'); return; }
+
+    const calcRes = await fetch('/api/calculate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(extractData.extracted)
+    });
+    const calc = await calcRes.json();
+    showCalcLoading(false);
+    if (!calcRes.ok || calc.error) { showCalcError(calc.error || 'Calculation failed.'); return; }
+    renderCalcResults(toCalcDisplay(calc));
+  } catch (e) {
+    showCalcLoading(false);
+    showCalcError('Something went wrong: ' + e.message);
+  }
 }
 
 let calcPDFFile = null;
@@ -1489,28 +1555,42 @@ function handleCalcFile(event) {
   document.getElementById('calc-file-info').textContent = `Selected Document: ${file.name}`;
   document.getElementById('calc-pdf-btn').style.display = 'inline-block';
 }
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 async function analyseCalcPDF() {
   if (!calcPDFFile) return;
   showCalcLoading(true);
-  setTimeout(() => {
-    runCalculation({ country: 'singapore', electricity_kwh: '24500', fuel_type: 'diesel', fuel_quantity: '600' });
-  }, 800);
-}
+  try {
+    const base64 = await fileToBase64(calcPDFFile);
+    const extractRes = await fetch('/api/extract-pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fileData: base64, mimeType: calcPDFFile.type, fileName: calcPDFFile.name, model: getSelectedCalcModel() })
+    });
+    const extractData = await extractRes.json();
+    if (!extractRes.ok || extractData.error) { showCalcLoading(false); showCalcError(extractData.error || 'Could not extract data from that PDF.'); return; }
 
-function showCalcLoading(show) { document.getElementById('calc-loading').style.display = show ? 'block' : 'none'; document.getElementById('calc-error').style.display = 'none'; document.getElementById('calc-results').style.display = 'none'; }
-function showCalcError(msg) { document.getElementById('calc-error').textContent = msg; document.getElementById('calc-error').style.display = 'block'; }
-
-async function runCalculation(payload) {
-  showCalcLoading(true);
-  setTimeout(() => {
+    const calcRes = await fetch('/api/calculate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(extractData.extracted)
+    });
+    const calc = await calcRes.json();
     showCalcLoading(false);
-    const kwh = parseFloat(payload.electricity_kwh) || 0;
-    const scope2_tco2e = (kwh * 0.0004057).toFixed(2);
-    const scope1_tco2e = payload.fuel_type ? (parseFloat(payload.fuel_quantity) * 0.0023 || 1.2).toFixed(2) : '0.00';
-    const total = (parseFloat(scope2_tco2e) + parseFloat(scope1_tco2e)).toFixed(2);
-    
-    renderCalcResults({ total_tco2e: total, scope2: { tco2e: scope2_tco2e, kwh }, scope1: { fuel_type: payload.fuel_type || 'On-site Fuel', tco2e: scope1_tco2e, quantity: payload.fuel_quantity || 0, unit: 'units' } });
-  }, 500);
+    if (!calcRes.ok || calc.error) { showCalcError(calc.error || 'Calculation failed.'); return; }
+    renderCalcResults(toCalcDisplay(calc));
+  } catch (e) {
+    showCalcLoading(false);
+    showCalcError('Something went wrong: ' + e.message);
+  }
 }
 
 function renderCalcResults(calc) {
