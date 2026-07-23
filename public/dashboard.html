@@ -1163,7 +1163,7 @@ function logout() {
     authToken = null; currentUser = null;
     safeStorage.removeItem('tca_token');
     safeStorage.removeItem('tca_active_view');
-    showAuthModal();
+    window.location.href = 'index.html';
 }
 
 function refreshUserProfileUI() {
