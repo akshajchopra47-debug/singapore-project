@@ -3,7 +3,7 @@ const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
 
 function getSupabase() {
-  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SECRET_KEY);
 }
 
 function signToken(payload) {
