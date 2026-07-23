@@ -342,6 +342,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
       </div>
       <span class="material-symbols-outlined" style="font-size:16px;color:var(--ink-muted);">chevron_right</span>
     </div>
+    <button class="back-btn" onclick="logout()" style="color:var(--crit);">Log out</button>
     <a href="index.html" class="back-btn">← Back to website</a>
   </div>
 </aside>
@@ -638,14 +639,14 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
                 <input type="text" id="set-fullname" class="chat-input" required>
               </div>
               <div class="ctrl-group">
-                <label style="font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--ink-muted);text-transform:uppercase;margin-bottom:6px;display:block;">Email Address (Gmail)</label>
-                <input type="email" id="set-email" class="chat-input" required>
+                <label style="font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--ink-muted);text-transform:uppercase;margin-bottom:6px;display:block;">Email Address</label>
+                <input type="email" id="set-email" class="chat-input" required disabled>
               </div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px;">
               <div class="ctrl-group">
                 <label style="font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--ink-muted);text-transform:uppercase;margin-bottom:6px;display:block;">Company Name</label>
-                <input type="text" id="set-company" class="chat-input" required>
+                <input type="text" id="set-company" class="chat-input">
               </div>
               <div class="ctrl-group">
                 <label style="font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--ink-muted);text-transform:uppercase;margin-bottom:6px;display:block;">Industry Sector</label>
@@ -666,11 +667,11 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
         <div class="card span-4" style="padding:28px;display:flex;flex-direction:column;justify-content:space-between;">
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-              <span class="pill-tag" id="set-plan-badge">PRO PLAN</span>
+              <span class="pill-tag" id="set-plan-badge">FREE PLAN</span>
               <span class="material-symbols-outlined" style="color:var(--moss-deep);">workspace_premium</span>
             </div>
             <h3 style="font-family:var(--display);font-size:18px;font-weight:600;margin-bottom:8px;">Subscription</h3>
-            <p style="font-size:13px;color:var(--ink-muted);line-height:1.6;margin-bottom:16px;">Your account has full access to automated ESG diagnostics, carbon accounting engine, and AI guidance.</p>
+            <p style="font-size:13px;color:var(--ink-muted);line-height:1.6;margin-bottom:16px;">Your account has access to automated ESG diagnostics, carbon accounting engine, and AI guidance.</p>
             <div style="background:var(--surface-low);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12.5px;color:var(--ink-mid);">
               <strong>Status:</strong> Active<br>
               <strong>Region:</strong> Singapore Jurisdiction
@@ -916,17 +917,57 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:600;color:var(--ink);lette
         <h2 id="auth-modal-title">Welcome Back</h2>
         <p style="font-size:13px;color:var(--ink-muted);margin-top:4px;" id="auth-modal-sub">Sign in to your ESG dashboard</p>
       </div>
-      <div id="auth-login-form" style="display:none;"></div>
-      <div id="auth-market-form" style="display:none;">
-        <p style="font-size:13px;color:var(--ink-mid);text-align:center;margin-bottom:22px;line-height:1.6;">Select the market dashboard you want to access.</p>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <button onclick="goToMarket('sg')" style="display:flex;align-items:center;gap:16px;text-align:left;">
-            <span style="font-size:26px;">🇸🇬</span>
-            <div><div style="font-size:14px;font-weight:600;color:var(--ink);">Singapore</div><div style="font-size:12px;color:var(--ink-muted);margin-top:2px;">SGX Reporting · Carbon Tax · ECA · WEMP</div></div>
-          </button>
+
+      <div id="auth-login-form" style="display:none;">
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-mid);display:block;margin-bottom:6px;">Email</label>
+          <input id="login-email" type="email" class="chat-input" placeholder="you@company.com">
         </div>
+        <div style="margin-bottom:20px;">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-mid);display:block;margin-bottom:6px;">Password</label>
+          <input id="login-password" type="password" class="chat-input" placeholder="••••••••" onkeypress="if(event.key==='Enter')doLogin()">
+        </div>
+        <div id="auth-error" style="display:none;color:#9E2B25;font-size:13px;margin-bottom:14px;background:#fdecea;padding:10px 14px;border-radius:8px;"></div>
+        <button class="btn btn-solid" style="width:100%;justify-content:center;padding:13px;" onclick="doLogin()" id="login-btn">Sign In →</button>
+        <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--ink-muted);">
+          No account? <button onclick="switchAuth('register')" style="background:none;border:none;color:var(--moss-deep);font-weight:700;cursor:pointer;font-size:13px;">Create one free</button>
+        </p>
       </div>
-      <div id="auth-register-form" style="display:none;"></div>
+
+      <div id="auth-register-form" style="display:none;">
+        <div style="margin-bottom:14px;">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-mid);display:block;margin-bottom:6px;">Full name</label>
+          <input id="reg-name" type="text" class="chat-input" placeholder="Your name">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-mid);display:block;margin-bottom:6px;">Company</label>
+          <input id="reg-company" type="text" class="chat-input" placeholder="Company name">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-mid);display:block;margin-bottom:6px;">Work email</label>
+          <input id="reg-email" type="email" class="chat-input" placeholder="you@company.com">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-mid);display:block;margin-bottom:6px;">Industry</label>
+          <select id="reg-industry" class="form-select">
+            <option value="Technology">Technology &amp; Software</option>
+            <option value="Manufacturing">Manufacturing &amp; Engineering</option>
+            <option value="Logistics">Logistics &amp; Supply Chain</option>
+            <option value="Real Estate">Real Estate &amp; Construction</option>
+            <option value="Consumer Goods">Consumer Goods &amp; Retail</option>
+            <option value="Other">Other Services</option>
+          </select>
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-mid);display:block;margin-bottom:6px;">Password (min. 8 characters)</label>
+          <input id="reg-password" type="password" class="chat-input" placeholder="••••••••" onkeypress="if(event.key==='Enter')doRegister()">
+        </div>
+        <div id="auth-error-reg" style="display:none;color:#9E2B25;font-size:13px;margin-bottom:14px;background:#fdecea;padding:10px 14px;border-radius:8px;"></div>
+        <button class="btn btn-solid" style="width:100%;justify-content:center;padding:13px;" onclick="doRegister()" id="register-btn">Create Account →</button>
+        <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--ink-muted);">
+          Already have an account? <button onclick="switchAuth('login')" style="background:none;border:none;color:var(--moss-deep);font-weight:700;cursor:pointer;font-size:13px;">Sign in</button>
+        </p>
+      </div>
     </div>
   </div>
 
@@ -941,6 +982,27 @@ const safeStorage = {
 
 let currentUser = null;
 let authToken = safeStorage.getItem('tca_token') || null;
+
+/* ══════════════════════════════════════════════
+   REAL API LAYER — talks to /api/auth and /api/audits
+   (backed by Supabase via Vercel serverless functions)
+══════════════════════════════════════════════ */
+const API_BASE = '/api';
+
+function apiHeaders() {
+  return { 'Content-Type': 'application/json', ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}) };
+}
+
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(API_BASE + path, {
+    method: opts.method || 'GET',
+    headers: apiHeaders(),
+    body: opts.body
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
 
 /* ── SEARCH INSIGHTS INDEX & HANDLER ── */
 const searchIndex = [
@@ -1006,59 +1068,96 @@ document.addEventListener('click', (e) => {
   }
 });
 
-async function apiFetch(path, opts = {}) {
-    const url = new URL('http://localhost' + path);
-    const action = url.searchParams.get('action');
-    const id = url.searchParams.get('id');
-    const method = opts.method ? opts.method.toUpperCase() : 'GET';
-    const body = opts.body ? JSON.parse(opts.body) : null;
-    await new Promise(r => setTimeout(r, 200));
-
-    if (path.startsWith('/auth')) {
-        if (action === 'me') {
-            return { token: authToken || 'mock_token', user: { full_name: safeStorage.getItem('tca_user_name') || 'Demo User', email: safeStorage.getItem('tca_user_email') || 'demo@company.com', company: safeStorage.getItem('tca_user_company') || 'Demo Company Pte Ltd', industry: safeStorage.getItem('tca_user_industry') || 'Technology', plan: 'pro', role: 'admin' } };
-        }
+/* ══════════════════════════════════════════════
+   BOOT / AUTH FLOW
+══════════════════════════════════════════════ */
+async function boot() {
+    if (!authToken) { showAuthModal(); return; }
+    try {
+        const data = await apiFetch('/auth?action=me');
+        currentUser = data.user;
+        refreshUserProfileUI();
+        await refreshOverviewFromLatestAudit();
+        const savedView = safeStorage.getItem('tca_active_view') || 'overview';
+        showView(savedView);
+    } catch (e) {
+        authToken = null;
+        safeStorage.removeItem('tca_token');
+        showAuthModal();
     }
-
-    if (path.startsWith('/audits')) {
-        let audits = JSON.parse(safeStorage.getItem('tca_audits') || '[]');
-        if (method === 'GET') return audits;
-        if (method === 'POST') {
-            const newAudit = { id: 'audit_' + Date.now(), created_at: new Date().toISOString(), ...body };
-            audits.unshift(newAudit); safeStorage.setItem('tca_audits', JSON.stringify(audits));
-            return newAudit;
-        }
-        if (method === 'DELETE') { audits = audits.filter(a => a.id !== id); safeStorage.setItem('tca_audits', JSON.stringify(audits)); return { success: true }; }
-    }
-
-    if (path.startsWith('/chat')) {
-        if (action === 'insight') return { insight: "Based on Singapore regulations, your facility shows gaps in Scope 1 emissions reporting. Recommendation: baseline electricity usage data and convert to tCO2e." };
-        return { reply: "I am your Climate Architects AI Copilot. I can help you navigate SGX climate disclosures, Singapore Carbon Tax deadlines, NEA Energy Management rules, and PUB WEMP requirements. How can I assist you today?" };
-    }
-
-    if (path.startsWith('/admin')) {
-        if (action === 'stats') return { total_users: 154, total_audits: 289, active_plans: { pro: 87, free: 67 } };
-        if (action === 'users') return { users: [ { id: '1', full_name: 'Jane Smith', email: 'jane@acme.com', company: 'Acme Pte Ltd', plan: 'pro', role: 'user', created_at: '2026-05-12T08:00:00Z' }, { id: '2', full_name: 'John Doe', email: 'john@capital.com', company: 'Capital Group', plan: 'free', role: 'user', created_at: '2026-06-01T10:30:00Z' } ], total: 2, pages: 1 };
-    }
-    return {};
 }
 
-async function boot() {
-    authToken = safeStorage.getItem('tca_token') || 'mock_token';
-    currentUser = { 
-      full_name: safeStorage.getItem('tca_user_name') || 'Alex Tan', 
-      email: safeStorage.getItem('tca_user_email') || 'alex.tan@company.com', 
-      company: safeStorage.getItem('tca_user_company') || 'Apex Manufacturing Pte Ltd', 
-      industry: safeStorage.getItem('tca_user_industry') || 'Manufacturing', 
-      plan: 'pro', 
-      role: 'admin' 
-    };
+function showAuthModal() {
+    document.getElementById('auth-modal').style.display = 'flex';
+    switchAuth('login');
+}
 
-    refreshUserProfileUI();
-    await refreshOverviewFromLatestAudit();
+function switchAuth(mode) {
+    const isLogin = mode === 'login';
+    document.getElementById('auth-login-form').style.display = isLogin ? 'block' : 'none';
+    document.getElementById('auth-register-form').style.display = isLogin ? 'none' : 'block';
+    document.getElementById('auth-modal-title').textContent = isLogin ? 'Welcome Back' : 'Create Free Account';
+    document.getElementById('auth-modal-sub').textContent = isLogin ? 'Sign in to your ESG dashboard' : 'Start your ESG compliance journey';
+    document.getElementById('auth-error').style.display = 'none';
+    document.getElementById('auth-error-reg').style.display = 'none';
+}
 
-    const savedView = safeStorage.getItem('tca_active_view') || 'overview';
-    showView(savedView);
+async function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const errEl = document.getElementById('auth-error');
+    const btn = document.getElementById('login-btn');
+    errEl.style.display = 'none';
+    if (!email || !password) { errEl.textContent = 'Please enter your email and password.'; errEl.style.display = 'block'; return; }
+    btn.textContent = 'Signing in…'; btn.disabled = true;
+    try {
+        const data = await apiFetch('/auth?action=login', { method: 'POST', body: JSON.stringify({ email, password }) });
+        authToken = data.token; currentUser = data.user;
+        safeStorage.setItem('tca_token', authToken);
+        document.getElementById('auth-modal').style.display = 'none';
+        refreshUserProfileUI();
+        await refreshOverviewFromLatestAudit();
+        showView('overview');
+        showToast('Welcome back, ' + currentUser.full_name.split(' ')[0] + '!');
+    } catch (e) {
+        errEl.textContent = e.message; errEl.style.display = 'block';
+    } finally {
+        btn.textContent = 'Sign In →'; btn.disabled = false;
+    }
+}
+
+async function doRegister() {
+    const full_name = document.getElementById('reg-name').value.trim();
+    const company = document.getElementById('reg-company').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const industry = document.getElementById('reg-industry').value;
+    const password = document.getElementById('reg-password').value;
+    const errEl = document.getElementById('auth-error-reg');
+    const btn = document.getElementById('register-btn');
+    errEl.style.display = 'none';
+    if (!full_name || !email || !password) { errEl.textContent = 'Name, email and password are required.'; errEl.style.display = 'block'; return; }
+    if (password.length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.style.display = 'block'; return; }
+    btn.textContent = 'Creating account…'; btn.disabled = true;
+    try {
+        const data = await apiFetch('/auth?action=register', { method: 'POST', body: JSON.stringify({ full_name, email, company, industry, password }) });
+        authToken = data.token; currentUser = data.user;
+        safeStorage.setItem('tca_token', authToken);
+        document.getElementById('auth-modal').style.display = 'none';
+        refreshUserProfileUI();
+        showView('overview');
+        showToast('Account created! Welcome, ' + currentUser.full_name.split(' ')[0] + '.');
+    } catch (e) {
+        errEl.textContent = e.message; errEl.style.display = 'block';
+    } finally {
+        btn.textContent = 'Create Account →'; btn.disabled = false;
+    }
+}
+
+function logout() {
+    authToken = null; currentUser = null;
+    safeStorage.removeItem('tca_token');
+    safeStorage.removeItem('tca_active_view');
+    showAuthModal();
 }
 
 function refreshUserProfileUI() {
@@ -1074,6 +1173,14 @@ function refreshUserProfileUI() {
     const ovName = document.getElementById('ov-firstname');
     if (ovName) ovName.textContent = firstName;
 
+    const setPlanBadge = document.getElementById('set-plan-badge');
+    if (setPlanBadge) setPlanBadge.textContent = (currentUser.plan === 'pro' ? 'PRO' : 'FREE') + ' PLAN';
+
+    if (currentUser.role === 'admin') {
+        const adminNav = document.getElementById('admin-nav-item');
+        if (adminNav) adminNav.style.display = 'flex';
+    }
+
     // Populate Settings Inputs
     const setFullName = document.getElementById('set-fullname');
     const setEmail = document.getElementById('set-email');
@@ -1081,24 +1188,24 @@ function refreshUserProfileUI() {
     const setIndustry = document.getElementById('set-industry');
     if (setFullName) setFullName.value = currentUser.full_name;
     if (setEmail) setEmail.value = currentUser.email;
-    if (setCompany) setCompany.value = currentUser.company;
-    if (setIndustry) setIndustry.value = currentUser.industry;
+    if (setCompany) setCompany.value = currentUser.company || '';
+    if (setIndustry && currentUser.industry) setIndustry.value = currentUser.industry;
 }
 
-function saveSettings(e) {
+async function saveSettings(e) {
     e.preventDefault();
-    currentUser.full_name = document.getElementById('set-fullname').value;
-    currentUser.email = document.getElementById('set-email').value;
-    currentUser.company = document.getElementById('set-company').value;
-    currentUser.industry = document.getElementById('set-industry').value;
+    const full_name = document.getElementById('set-fullname').value.trim();
+    const company = document.getElementById('set-company').value.trim();
+    const industry = document.getElementById('set-industry').value;
 
-    safeStorage.setItem('tca_user_name', currentUser.full_name);
-    safeStorage.setItem('tca_user_email', currentUser.email);
-    safeStorage.setItem('tca_user_company', currentUser.company);
-    safeStorage.setItem('tca_user_industry', currentUser.industry);
-
-    refreshUserProfileUI();
-    showToast('Account settings updated successfully.');
+    try {
+        const data = await apiFetch('/auth?action=update', { method: 'PATCH', body: JSON.stringify({ full_name, company, industry }) });
+        currentUser = data.user;
+        refreshUserProfileUI();
+        showToast('Account settings updated successfully.');
+    } catch (e) {
+        showToast('Could not save settings: ' + e.message);
+    }
 }
 
 async function refreshOverviewFromLatestAudit() {
@@ -1313,6 +1420,12 @@ async function generateAIInsight(gaps, score, applicable) {
     } catch (e) {
         const fallback = `Based on your ${score}% score across ${applicable} applicable frameworks, ${gaps.length > 0 ? `you have ${gaps.length} compliance gap(s) to address` : 'you are in good standing'}.`;
         insightEl.innerHTML = `<p>${fallback}</p>`;
+        if (lastAuditData) {
+            try {
+                await apiFetch('/audits', { method: 'POST', body: JSON.stringify({ ...lastAuditData, ai_insight: fallback }) });
+                loadReportsBadge();
+            } catch (e2) {}
+        }
     }
 }
 
